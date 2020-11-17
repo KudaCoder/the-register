@@ -1,0 +1,117 @@
+.column1 {
+	width: 50%;
+	margin: auto;
+}
+
+.column2 {
+	width: 50%;
+}
+
+.wrapper {
+	padding-top: 50px;
+}
+
+.main {
+	
+}
+
+.db_welcome {
+	text-align: center;
+	padding-top: 25px;
+	/*border: solid black 1pt;*/
+	width: 100%;
+	margin-top: 25px;
+	padding: 25px 25px 25px 25px;
+}
+
+.db_welcome span {
+	font-size: 28pt;
+	font-weight: 5000;
+}
+
+.db_welcome p {
+	padding-top: 10px;
+}
+
+#search_area {
+	padding-top: 30px;
+}
+
+.remove-restrict {
+	text-align: center;
+}
+
+.login-text {
+	text-align: center;
+	padding-top: 25px;
+}
+
+.login-text p {
+	padding-bottom: 15px;
+}
+
+#messages {
+	width: 30%;
+	margin: auto;
+}
+
+.register-link {
+	padding-top: 25px;
+}
+
+.db-text {
+	text-align: center;
+	padding-bottom: 30px;
+}
+
+.graph-tile {
+	margin-top: 25px;
+	height: 250%; 
+	width: 500px;
+	padding: 25px 25px 25px 25px;
+}
+
+.shadow {
+	box-shadow: 10px 10px 50px 15px grey;
+}
+
+.v-center {
+	text-align: center;
+	margin: auto;
+}
+
+.line-break {
+	margin-top: 50px;
+ 	border: 0;
+    height: 0; /* Firefox... */
+    box-shadow: 0 0 10px 1px black;
+}
+
+.login-form{
+	margin-bottom: 30%;
+}
+
+.register-form{
+	margin-bottom: 24%;
+}
+
+.boring-text {
+	padding: 75px 25px 75px 25px;
+}
+
+.boring-text h3 {
+	text-align: center;
+	margin: auto;
+	margin-top: -25px;
+	margin-bottom: 25px;
+}
+
+@media only screen and (max-width: 960px) {
+	.p-top {
+		margin-top: 50px;
+	}
+
+	.db_welcome {
+		width: 500px;
+	}
+}

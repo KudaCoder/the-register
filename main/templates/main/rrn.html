@@ -1,0 +1,244 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block content %}
+<form class="form-group" method="POST" action="">{% csrf_token %}
+  <div class="container">
+
+<!-- ROW 1 -->
+    {% for entry in rrnData %}
+      {% if entry.certType == 'TM44' %}
+        <div class ="row">
+          <div class="col-lg-12" style="padding-left: 500px">
+            <h1>{{ entry.certType }} </h1>
+          </div>
+        </div>
+
+  <!-- ROW 2 -->
+        <div class ="row">
+          <div class="col-lg-12" style="padding-left: 305px">
+            <h1> {{ entry.rrn }}</h1><br><br>
+          </div>
+        </div>
+      {% else %}
+        <div class ="row">
+          <div class="col-lg-12" style="padding-left: 505px">
+            <h1>{{ entry.certType }} </h1>
+          </div>
+        </div>
+
+  <!-- ROW 2 -->
+        <div class ="row">
+          <div class="col-lg-12" style="padding-left: 315px">
+            <h1> {{ entry.rrn }}</h1><br><br>
+          </div>
+        </div>
+      {% endif %}
+
+<!-- ROW 3 -->
+      <div class ="row">
+        {% if entry.certType == 'EPC' %}
+          <div class="col-lg-4 text-center">
+        {% elif entry.certType == 'TM44' %}
+          <div class="col-lg-6 text-center">
+        {% endif %}
+        <h2 style="padding-bottom: 5px">Site Address</h2>
+          {% if entry.address_line_1 != '' and entry.address_line_2 == '' and entry.address_line_3 == '' and entry.address_line_4 == '' %}
+            <p style="line-height: 110%; font-size: 20px">{{ entry.address_line_1 }}</p>
+          {% else %}
+            <p style="line-height: 110%; font-size: 20px">{{ entry.address_line_1 }},</p>
+          {% endif %}
+          {% if entry.address_line_2 != '' %}
+            <p style="line-height: 110%; font-size: 20px">{{ entry.address_line_2 }},</p>
+          {% endif %}
+          {% if entry.address_line_3 != '' %}
+            <p style="line-height: 110%; font-size: 20px">{{ entry.address_line_3 }},</p>
+          {% endif %}
+          {% if entry.address_line_4 != '' %}
+            {% if entry.address_line_4 == entry.postcode %}
+              <p style="line-height: 110%; font-size: 20px">{{ entry.address_line_4 }}</p>
+            {% else %}
+              <p style="line-height: 110%; font-size: 20px">{{ entry.address_line_4 }}</p>
+              <p style="line-height: 110%; font-size: 20px">{{ entry.postcode }}</p>
+            {% endif %}
+          {% endif %}
+          </div>
+        {% if entry.rating >= 0 %}
+          {% if entry.rating == 0 %}
+            <div class="col-lg-2 text-center" style="padding-top: 10px; background-color: #7fb3d5">
+              <h2>EPC Rating</h2>
+              <h3 style="padding-top: 20px; color: white">No Information provided</h3>
+            </div>
+          {% elif entry.rating <= 25 %}
+            <div class="col-lg-2 text-center" style="padding-top: 10px; background-color: #0d6826">
+              <h2>EPC Rating</h2>
+              <h1 style="color: white; font-size: 100px">{{ entry.rating }}</h1>
+            </div>
+          {% elif entry.rating <= 50 %}
+            <div class="col-lg-2 text-center" style="padding-top: 10px; background-color: #31a03d">
+              <h2>EPC Rating</h2>
+              <h1 style="color: white; font-size: 100px">{{ entry.rating }}</h1>
+            </div>
+          {% elif entry.rating <= 75 %}
+            <div class="col-lg-2 text-center" style="padding-top: 10px; background-color: #7fc31c">
+              <h2>EPC Rating</h2>
+              <h1 style="font-size: 100px; color: white">{{ entry.rating }}</h1>
+            </div>
+          {% elif entry.rating <= 100 %}
+            <div class="col-lg-2 text-center" style="padding-top: 10px; background-color: #ffcc00">
+              <h2 style="color: grey">EPC Rating</h2>
+              <h1 style="color: white; font-size: 100px">{{ entry.rating }}</h1>
+            </div>
+          {% elif entry.rating <= 125 %}
+            <div class="col-lg-2 text-center" style="padding-top: 10px; background-color: #fda145">
+              <h2 style="color: grey">EPC Rating</h2>
+              <h1 style="color: white; font-size: 90px;">{{ entry.rating }}</h1>
+            </div>
+          {% elif entry.rating <= 150 %}
+            <div class="col-lg-2 text-center" style="padding-top: 10px; background-color: #ff6600">
+              <h2 style="color: grey">EPC Rating</h2>
+              <h1 style="color: white; font-size: 90px">{{ entry.rating }}</h1>
+            </div>
+          {% elif entry.rating > 150 %}
+            <div class="col-lg-2 text-center" style="padding-top: 10px; background-color: #ff0000">
+              <h2 style="color: grey">EPC Rating</h2>
+              <h1 style="color: white; font-size: 90px">{{ entry.rating }}</h1>
+            </div>
+          {% endif %}
+        {% else %}
+          <!-- Empty tile for future expansion in TM44 or DEC display -->
+          <!-- <div class="col-lg-2 text-center" style="padding-top: 10px"></div> -->
+        {% endif %}
+        <div class="col-lg-3" style="padding-left: 20px; padding-top: 45px">
+          <div class="flex-container text-center" style="display: flex; justify-content: center; align-items: center">
+            <h2>Assessor Name</h2>
+          </div>
+          <div class="flex-container text-center" style="display: flex; justify-content: center; align-items: center">
+            <p style="padding-top: 15px">{{ entry.assessor }}</p>
+          </div>
+        </div>
+        <div class="col-lg-3 text-center ">
+          <h2 style="padding-top: 20px">Accreditation Scheme</h2>
+          <p style="padding-top: 10px">{{ entry.scheme }}<br>{{ entry.number }}</p>
+        </div>
+      </div>  
+
+<!-- ROW 4 -->
+      <div class="row">
+        {% if 'TM44' in entry.certType %}
+          <div class="col-lg-3 text-center">
+            <h2>Certificate Expiry Date</h2>
+            <p>{{ entry.expiry }}</p>
+          </div>
+          <div class="col-lg-3 text-center">
+            <h2>Manager's Name</h2>
+            <p>{{ entry.manager }}</p>
+          </div>
+        {% else %}
+          <div class="col-lg-6 text-center" style="padding-top: 15px">
+            <h2 style="padding-top: 15px">Certificate Expiry Date</h2>
+            <p>{{ entry.expiry }}</p>
+          </div>
+        {% endif %}
+          <div class="col-lg-3 text-center" style="padding-left: 20px; padding-top: 15px">
+            <h2>Employer</h2>
+            <p>{{ entry.employer }}</p>
+          </div>
+          <div class="col-lg-3 text-center" style="padding-top: 15px">
+            <h2>Employer Address</h2>
+            <p>{{ entry.employerAddress }}</p>
+          </div>
+      </div>
+
+<!-- ROW 5 -->
+      <div class="row">
+        <div class="col-lg-3 text-center" style="padding-left: 28px">
+          <h2>Complexity Level</h2>
+          <p>{{ entry.complexity }}</p>
+        </div>
+        <div class="col-lg-3 text-center" style="padding-left: 20px">
+          <h2>Building Area</h2>
+          <p>{{ entry.area }}m<sup>2</sup></p>
+        </div>
+
+<!-- EPC Only Details -->
+        {% if 'EPC' in entry.certType %}
+          <div class="col-lg-3 shadow-lg mb-2 bg-white rounded-left" style="padding-left: 20px">
+            <h2>Building Heating</h2>
+            <p>{{ entry.heating }}</p>
+          </div>
+          <div class="col-lg-3 shadow-lg mb-2 bg-white rounded-right" style="padding-left: 20px">
+            <h2>Environment Types</h2>
+            <p>{{ entry.environment }}</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-lg-6">
+            <p></p>
+          </div>
+          <div class="col-lg-3 shadow-lg mb-2 bg-white rounded-left" style="padding-left: 20px">
+            <h2>Building Emissions</h2>
+            {% if entry.emissions == 0.00 %}
+              <p>No Data Provided</p>
+            {% else %}
+              <p>{{ entry.emissions }} kgCO<sub>2</sub>/m<sup>2</sup>/year</p>
+            {% endif %}
+          </div>
+          <div class="col-lg-3 shadow-lg mb-2 bg-white rounded-right" style="padding-left: 20px">
+            <h2>Energy Usage</h2>
+            {% if entry.energy == 0.00 %}
+              <p>No Data Provided</p>
+            {% else %}
+              <p>{{ entry.energy }} kWh/m<sup>2</sup>/year</p>
+            {% endif %}
+          </div>
+        </div>
+
+<!-- TM44 Only Details -->
+        {% elif 'TM44' in entry.certType %}
+          <div class="col-lg-3 shadow-lg mb-2 bg-white rounded-left" style="padding-left: 20px">
+            <h2>AC Output</h2>
+            {% if entry.ac == 0.00 %}
+              <p>No Data Provided</p>
+            {% else %}
+              <p>{{ entry.ac }} kW</p>
+            {% endif %}
+          </div>
+          <div class="col-lg-3 shadow-lg mb-2 bg-white rounded-right" style="padding-left: 20px">
+            <h2>Refrigerant Weight</h2>
+            {% if entry.refrig == 0.00 %}
+              <p>No Data Provided</p>
+            {% else %}
+              <p>{{ entry.refrig }} kg</p>
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+    <div class="row">
+      <div class="col-lg-1 offset-lg-2" style="padding-top: 60px">
+      </div>
+      <div class="col-lg-3" style="padding-top: 60px">
+        <button class="btn btn-outline-danger" style="width: 100%" name="edit" type="submit">Edit Details</button>
+      </div>
+      <div class="col-lg-3" style="padding-top: 60px">
+        <button class="btn btn-outline-info" style="width: 100%" name="return" type="submit">Return to Search</button>
+      </div>
+      <div class="col-lg-1" style="padding-top: 60px">
+      </div>
+    </div>
+  </div>
+</form>
+{% endblock content %}
+
+
+
+
+
+
+
+
+
+
+
+

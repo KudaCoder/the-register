@@ -1,0 +1,29 @@
+{% extends 'main/base.html' %}
+{% block content %}
+  <div class="login-text">
+  	<h1 style="padding-bottom: 50px;">Login</h1>
+    <p>Please provide username and password to login and access the goodies...</p>
+  	<form class="form-group login-form" method="POST" action="">{% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.GET.next }}" />
+      <div class="row">
+        <div class="col-lg-4 offset-lg-4">
+          <input class="wide form-control-lg shadow-sm" placeholder="Username" type="text" name="username">
+        </div>
+      </div>
+      <div class="row py-4">
+        <div class="col-lg-4 offset-lg-4">
+          <input class="wide form-control-lg shadow-sm" placeholder="Password" type="password" name="password"><br>
+        </div>
+      </div>
+      {% for message in messages %}
+        <p class="alert alert-danger" id="messages">{{message}}</p>
+      {% endfor %}
+      <div class="col-lg-3 offset-lg-4" style="padding-top: 15px; margin-left: 37.5%;">
+        <input class="form-control sub-btn shadow" name="submit" type="submit" value="Submit">
+      </div>
+      <span><p class="register-link">Or if you need to register...<a href="{% url 'register' %}">click here</a></p></span>
+    </form>
+  </div>
+
+{% endblock %}
+

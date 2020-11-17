@@ -1,0 +1,11 @@
+truncate assessor;
+truncate certificate;
+truncate complexity;
+truncate employer;
+truncate environment;
+truncate heating;
+truncate postcode;
+truncate rrn;
+truncate scheme;
+truncate site;
+truncate type;

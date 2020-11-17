@@ -1,0 +1,325 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block content %}
+{% for entry in data %}
+  <div class="container text-center">
+    <h1>Edit for {{ entry.rrn }}</h1>
+    <p>Please ensure to check 'Are you sure?' for any edits else they will not be updated</p>
+  </div>
+{% endfor %}
+
+<form class="form-group" method="POST" action="">{% csrf_token %}
+  {% for entry in data %}
+  <div class="row" style="padding-top:15px">
+    <div class="col-lg-2">
+      <label class="form-control-sm" style="font-size: 21px">RRN: </label>
+    </div>
+    <div class="col-lg-4 offset-lg-0">
+      <input class="wide form-control-lg shadow-sm" type="text" placeholder="{{ entry.rrn }}">
+    </div>
+    <div class="col-lg-4 offset-lg-0">
+      <input class="wide form-control-lg shadow-sm" type="text" name="rrn" value="" placeholder="Please Input Change Value">
+    </div>
+    <div class="col-lg-2">
+      <label class="form-control-sm" style="font-size: 21px"><small>Are you sure?</small></label>
+      <input type="checkbox" name="rrn_check" value="rrn_check">
+    </div>
+  </div>
+
+  <div class="row" style="padding-top:15px">
+    <div class="col-lg-2">
+      <label class="form-control-sm" style="font-size: 21px">Type: </label>
+    </div>
+    <div class="col-lg-4 offset-lg-0">
+      <input class="wide form-control-lg shadow-sm" type="text" placeholder="{{ entry.certType }}">
+    </div>
+    <div class="col-lg-4 offset-lg-0">
+      <select class="form-control-lg wide" name="type">
+        {% for data in typeData %}
+          {% if data.type != 'DEC Cannot Be Processed' %}
+            {% if entry.certType == data.type %}
+              <option value="{{ data.type }}" selected="selected">{{ data.type }}</option>
+            {% else %}
+              <option value="{{ data.type }}">{{ data.type }}</option>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-lg-2">
+      <label class="form-control-sm" style="font-size: 21px"><small>Are you sure?</small></label>
+      <input type="checkbox" name="type_check" value="type_check">
+    </div>
+  </div>
+
+  <div class="row" style="padding-top:15px">
+    <div class="col-lg-2">
+      <label class="form-control-sm" style="font-size: 21px">Site Address: </label>
+    </div>
+    <div class="col-lg-4 offset-lg-0" style="word-wrap: break-word;">
+      <textarea class="wide form-control-lg shadow-sm" style="height: 120%" type="text" placeholder="{{ entry.site }}"></textarea>
+    </div>
+    <div class="col-lg-4 offset-lg-0">
+       <textarea class="wide form-control-lg shadow-sm" style="height: 120%" name="site" value="" placeholder="Please Input Change Value" type="text"></textarea>
+    </div>
+    <div class="col-lg-2">
+      <label class="form-control-sm" style="font-size: 21px"><small>Are you sure?</small></label>
+      <input type="checkbox" name="site_check" value="site_check">
+    </div>
+  </div>
+
+  <div class="row" style="padding-top:35px">
+    <div class="col-lg-2">
+      <label class="form-control-sm" style="font-size: 21px">Assessor: </label>
+    </div>
+    <div class="col-lg-4 offset-lg-0">
+      <input class="wide form-control-lg shadow-sm" type="text" placeholder="{{ entry.assessor }}">
+    </div>
+    <div class="col-lg-4 offset-lg-0">
+      <input class="wide form-control-lg shadow-sm" type="text" name="assessor" placeholder="Please Input Change Value">
+    </div>
+    <div class="col-lg-2">
+      <label class="form-control-sm" style="font-size: 21px"><small>Are you sure?</small></label>
+      <input type="checkbox" name="assessor_check" value="assessor_check">
+    </div>
+  </div>
+
+  <div class="row" style="padding-top:15px">
+    <div class="col-lg-2">
+      <label class="form-control-sm" style="font-size: 21px">Number: </label>
+    </div>
+    <div class="col-lg-4 offset-lg-0">
+      <input class="wide form-control-lg shadow-sm" type="text" placeholder="{{ entry.number }}">
+    </div>
+    <div class="col-lg-4 offset-lg-0">
+      <input class="wide form-control-lg shadow-sm" type="text" name="number" placeholder="Please Input Change Value">
+    </div>
+    <div class="col-lg-2">
+      <label class="form-control-sm" style="font-size: 21px"><small>Are you sure?</small></label>
+      <input type="checkbox" name="number_check" value="number_check">
+    </div>
+  </div>
+
+  <div class="row" style="padding-top:15px">
+    <div class="col-lg-2">
+      <label class="form-control-sm" style="font-size: 21px">Scheme: </label>
+    </div>
+    <div class="col-lg-4 offset-lg-0">
+      <input class="wide form-control-lg shadow-sm" type="text" placeholder="{{ entry.scheme }}">
+    </div>
+    <div class="col-lg-4 offset-lg-0">
+      <select class="form-control-lg wide" name="scheme">
+        {% for data in schemeData %}
+          {% if entry.scheme == data.scheme %}
+            <option value="{{ data.scheme }}" selected="selected">{{ data.scheme }}</option>
+          {% else %}
+            <option value="{{ data.scheme }}">{{ data.scheme }}</option>
+          {% endif %}
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-lg-2">
+      <label class="form-control-sm" style="font-size: 21px"><small>Are you sure?</small></label>
+      <input type="checkbox" name="scheme_check" value="scheme_check">
+    </div>
+  </div>
+
+  <div class="row" style="padding-top:15px">
+    <div class="col-lg-2">
+      <label class="form-control-sm" style="font-size: 21px">Expiry Date: </label>
+    </div>
+    <div class="col-lg-4 offset-lg-0">
+      <input class="wide form-control-lg shadow-sm" type="text" placeholder="{{ entry.expiry }}">
+    </div>
+    <div class="col-lg-4 offset-lg-0" data-provide="datepicker">
+      <input class="wide form-control-lg shadow-sm" type="text" name="expiry" placeholder="Please Select Expiry Date">
+    </div>
+    <div class="col-lg-2">
+      <label class="form-control-sm" style="font-size: 21px"><small>Are you sure?</small></label>
+      <input type="checkbox" name="expiry_check" value="expiry_check">
+    </div>
+  </div>
+
+  <div class="row" style="padding-top:15px">
+    <div class="col-lg-2">
+      <label class="form-control-sm" style="font-size: 21px">Complexity: </label>
+    </div>
+    <div class="col-lg-4 offset-lg-0">
+      <input class="wide form-control-lg shadow-sm" type="text" placeholder="{{ entry.complexity }}">
+    </div>
+    <div class="col-lg-4 offset-lg-0">
+      <select class="form-control-lg wide" name="complexity">
+        {% for data in compData %}
+          {% if data.comp != '' %}
+            {% if entry.complexity == data.comp %}
+              <option value="{{ data.comp }}" selected="selected">{{ data.comp }}</option>
+            {% else %}
+              <option value="{{ data.comp }}">{{ data.comp }}</option>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-lg-2">
+      <label class="form-control-sm" style="font-size: 21px"><small>Are you sure?</small></label>
+      <input type="checkbox" name="comp_check" value="comp_check">
+    </div>
+  </div>
+
+  <div class="row" style="padding-top:15px">
+    <div class="col-lg-2">
+      <label class="form-control-sm" style="font-size: 21px">Area (m<sup>2</sup>): </label>
+    </div>
+    <div class="col-lg-4 offset-lg-0">
+      <input class="wide form-control-lg shadow-sm" type="text" placeholder="{{ entry.area }}">
+    </div>
+    <div class="col-lg-4 offset-lg-0">
+      <input class="wide form-control-lg shadow-sm" type="text" name="area" placeholder="Please Input Change Value">
+    </div>
+    <div class="col-lg-2">
+      <label class="form-control-sm" style="font-size: 21px"><small>Are you sure?</small></label>
+      <input type="checkbox" name="area_check" value="area_check">
+    </div>
+  </div>
+
+  <div class="row" style="padding-top:15px">
+    <div class="col-lg-2">
+      <label class="form-control-sm" style="font-size: 21px">Employer: </label>
+    </div>
+    <div class="col-lg-4 offset-lg-0">
+      <input class="wide form-control-lg shadow-sm" type="text" placeholder="{{ entry.employer }}">
+    </div>
+    <div class="col-lg-4 offset-lg-0">
+      <input class="wide form-control-lg shadow-sm" type="text" name="employer" placeholder="Please Input Change Value">
+    </div>
+    <div class="col-lg-2">
+      <label class="form-control-sm" style="font-size: 21px"><small>Are you sure?</small></label>
+      <input type="checkbox" name="emp_check" value="emp_check">
+    </div>
+  </div>
+
+  <div class="row" style="padding-top:15px">
+    <div class="col-lg-2">
+      <label class="form-control-sm" style="font-size: 21px">Address: </label>
+    </div>
+    <div class="col-lg-4 offset-lg-0" style="word-wrap: break-word;">
+      <textarea class="wide form-control-lg shadow-sm" style="height: 120%" type="text" placeholder="{{ entry.employerAddress }}"></textarea>
+    </div>
+    <div class="col-lg-4 offset-lg-0">
+       <textarea class="wide form-control-lg shadow-sm" style="height: 120%" name="empAdd" placeholder="Please Input Change Value" type="text"></textarea>
+    </div>
+    <div class="col-lg-2">
+      <label class="form-control-sm" style="font-size: 21px"><small>Are you sure?</small></label>
+      <input type="checkbox" name="empAdd_check" value="empAdd_check">
+    </div>
+  </div>
+
+  {% if 'EPC' in entry.certType %}
+    <div class="row" style="padding-top:35px">
+      <div class="col-lg-2">
+        <label class="form-control-sm" style="font-size: 21px">EPC Rating: </label>
+      </div>
+      <div class="col-lg-4 offset-lg-0">
+        <input class="wide form-control-lg shadow-sm" type="text" placeholder="{{ entry.rating }}">
+      </div>
+      <div class="col-lg-4 offset-lg-0">
+        <input class="wide form-control-lg shadow-sm" type="text" name="rating" placeholder="Please Input Change Value">
+      </div>
+      <div class="col-lg-2">
+      <label class="form-control-sm" style="font-size: 21px"><small>Are you sure?</small></label>
+      <input type="checkbox" name="rating_check" value="rating_check">
+    </div>
+    </div>
+
+    <div class="row" style="padding-top:15px">
+      <div class="col-lg-2">
+        <label class="form-control-sm" style="font-size: 21px">Environment: </label>
+      </div>
+      <div class="col-lg-4 offset-lg-0">
+        <input class="wide form-control-lg shadow-sm" type="text" placeholder="{{ entry.environment }}">
+      </div>
+      <div class="col-lg-4 offset-lg-0">
+        <select class="form-control-lg wide" name="environment">
+          {% for data in envData %}
+            {% if data.environment != '' %}
+              {% if entry.environment in data.environment %}
+                <option value="{{ data.environment }}" selected="selected">{{ data.environment }}</option>
+              {% else %}
+                <option value="{{ data.environment }}" >{{ data.environment }}</option>
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-lg-2">
+        <label class="form-control-sm" style="font-size: 21px"><small>Are you sure?</small></label>
+        <input type="checkbox" name="env_check" value="env_check">
+      </div>
+    </div>
+
+    <div class="row" style="padding-top:15px">
+      <div class="col-lg-2">
+        <label class="form-control-sm" style="font-size: 21px">Heating: </label>
+      </div>
+      <div class="col-lg-4 offset-lg-0">
+        <input class="wide form-control-lg shadow-sm" type="text" placeholder="{{ entry.heating }}">
+      </div>
+      <div class="col-lg-4 offset-lg-0">
+        <select class="form-control-lg wide" name="heating">
+          {% for data in heatData %}
+            {% if data.heating != '' %}
+              {% if entry.heating == data.heating %}
+                <option value="{{ data.heating }}" selected="selected">{{ data.heating }}</option>
+              {% else %}
+                <option value="{{ data.heating }}" >{{ data.heating }}</option>
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-lg-2">
+        <label class="form-control-sm" style="font-size: 21px"><small>Are you sure?</small></label>
+        <input type="checkbox" name="heat_check" value="heat_check">
+      </div>
+    </div>
+
+    <div class="row" style="padding-top:15px">
+      <div class="col-lg-2">
+        <label class="form-control-sm" style="font-size: 21px">Emissions:<small>(kgCO<sub>2</sub>/m<sup>2</sup>/yr)</small></label>
+      </div>
+      <div class="col-lg-4 offset-lg-0">
+        <input class="wide form-control-lg shadow-sm" type="text" placeholder="{{ entry.emissions }}">
+      </div>
+      <div class="col-lg-4 offset-lg-0">
+        <input class="wide form-control-lg shadow-sm" type="text" name="emissions" placeholder="Please Input Change Value">
+      </div>
+      <div class="col-lg-2">
+        <label class="form-control-sm" style="font-size: 21px"><small>Are you sure?</small></label>
+        <input type="checkbox" name="emissions_check" value="emissions_check">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-2">
+        <label class="form-control-sm" style="font-size: 21px">Energy Usage:<small>(kWh/m<sup>2</sup>/yr)</small></label>
+      </div>
+      <div class="col-lg-4 offset-lg-0">
+        <input class="wide form-control-lg shadow-sm" type="text" placeholder="{{ entry.energy }}">
+      </div>
+      <div class="col-lg-4 offset-lg-0">
+        <input class="wide form-control-lg shadow-sm" type="text" name="energy" placeholder="Please Input Change Value">
+      </div>
+      <div class="col-lg-2">
+        <label class="form-control-sm" style="font-size: 21px"><small>Are you sure?</small></label>
+        <input type="checkbox" name="energy_check" value="energy_check">
+      </div>
+    </div>
+
+  {% endif %}
+    <div class="col-lg-3 offset-lg-4" style="padding-top: 50px">
+      <button class="btn btn-outline-success" style="width: 120%" name="change" type="submit">Confirm Changes</button>
+    </div>
+  {% endfor %}
+</form>
+
+
+{% endblock content%}

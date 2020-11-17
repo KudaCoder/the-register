@@ -1,0 +1,304 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container" style="padding-bottom: 25px" id="search_area">
+  <div class="db-text">
+    <h1>The Database</h1>
+  </div>
+
+{% if not INdata %}
+  <div class="db_welcome shadow">
+    <h3>The Database is your access to all the information, in all the certificates, within <br /> <span>The Register</span></h3>
+    <p>The Register is fairly large <strong>(just shy of 1 million records!)</strong> so try to make your serach as specific as possible.  Most searches are sorted by expiry date (with the exception of "Site Address" searches which are sorted alphabetically) so you can view the oldest certificates first... <br />You can specify an expiry range if you wish!</p>
+    <p>To return your data as fast as possible, all queries have been limited to <strong>1000</strong> entries!  If you require more than this then just tick the <br />'Remove Query Restrictions' checkbox... but be prepared to wait!</p>
+  </div>
+{% endif %}
+
+{% if INdata %}
+  <div class="accordion" id="">
+    <div class="card">
+      <div class="card-header" id="headingOne">
+        <h5 class="mb-0">
+          <button class="btn btn btn-outline-secondary" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+            Show search Query
+          </button>
+        </h5>
+      </div>
+
+      <div id="collapseOne" class="collapse" aria-labelledby="headingOne">
+        <div class="card-body" style="background-color: #fafafa">
+{% endif %}
+  <div class="wrapper">
+    <form class="form-group" method="POST" action="">{% csrf_token %}
+      <div class="row">
+        <div class="col-lg-1">
+          <label class="form-control-sm" style="font-size: 21px">In</label>
+        </div>
+        <div class="col-lg-4">
+          <select class="form-control-lg shadow-sm wide" name="Category1" id="category1"> 
+          {% if postData %} 
+            {% for data in postData %}
+              {% if 'postcode' in data.queryType1 %}
+                <option value="postcode" selected="selected">Postcodes</option>
+              {% else %}
+                <option value="postcode">Postcodes</option>
+              {% endif %}
+              {% if 'site' in data.queryType1 %}
+                <option value="site" selected="selected">Site Addresses</option>
+              {% else %}
+                <option value="site">Site Addresses</option>
+              {% endif %}
+              {% if 'rrn' in data.queryType1 %}
+                  <option value="rrn" selected="selected">RRN Number</option>
+                {% else %}
+                  <option value="rrn">RRN Number</option>
+                {% endif %}
+              {% if 'type' in data.queryType1 %}
+                <option value="type" selected="selected">Inspection Types</option>
+              {% else %}
+                <option value="type">Inspection Types</option>
+              {% endif %}
+              {% if 'scheme' in data.queryType1 %}
+                <option value="scheme" selected="selected">Accreditation Schemes</option>
+              {% else %}
+                <option value="scheme">Accreditation Schemes</option>
+              {% endif %}
+              {% if 'assessor' in data.queryType1 %}
+                <option value="assessor" selected="selected">Assessor</option>
+              {% else %}
+                <option value="assessor">Assessor</option>
+              {% endif %}
+            {% endfor %}
+          {% else %}
+            <option value="postcode" selected="selected">Postcodes</option>
+            <option value="site">Site Addresses</option>
+            <option value="rrn">RRN Number</option>
+            <option value="type">Inspection Types</option>
+            <option value="scheme">Accreditation Schemes</option>
+            <option value="assessor">Assessor</option>
+          {% endif %}
+          </select>
+        </div>
+        <div class="col-lg-5 offset-lg-1">
+          {% if postData %}
+            {% for data in postData %}
+              <input class="wide form-control-lg shadow-sm" placeholder="Search For" type="text" name="search_query" value="{{ data.query }}">
+            {% endfor %}
+          {% else %}
+            <input class="wide form-control-lg shadow-sm" placeholder="Search For" type="text" name="search_query" value="">
+          {% endif %}
+        </div>
+      </div>
+      <div class="row py-4">
+        <div class="col-lg-1">
+          <label class="form-control-sm" style="font-size: 21px">Where:</label>
+        </div>
+        <div class="col-lg-4">
+          <select class="form-control-lg wide" name="Category2" id="category2">
+          {% if postData %} 
+            {% for data in postData %}
+              {% if '--' in data.queryType2 %}
+                <option value="--" selected="selected">--</option>
+                <option value="assessor">Assessor</option>
+                <option value="postcode">Postcode</option>
+                <option value="type">Inspection Type</option>
+                <option value="scheme">Accreditation Scheme</option>
+                <option value="expiry_before">Expiry Before</option>
+              {% else %}
+                  <option value="--">--</option>
+                {% if 'assessor' in data.queryType2 %}
+                  <option value="assessor" selected="selected">Assessor</option>
+                {% else %}
+                  <option value="assessor">Assessor</option>
+                {% endif %}
+                {% if 'postcode' in data.queryType2 %}
+                  <option value="postcode" selected="selected">Postcodes</option>
+                {% else %}
+                  <option value="postcode">Postcodes</option>
+                {% endif %}
+                {% if 'type' in data.queryType2 %}
+                  <option value="type" selected="selected">Inspection Types</option>
+                {% else %}
+                  <option value="type">Inspection Types</option>
+                {% endif %}
+                {% if 'scheme' in data.queryType2 %}
+                  <option value="scheme" selected="selected">Accreditation Schemes</option>
+                {% else %}
+                  <option value="scheme">Accreditation Schemes</option>
+                {% endif %}
+                {% if 'expiry_before' in data.queryType2 %}
+                  <option value="expiry_before" selected="selected">Expiry Before</option>
+                {% else %}
+                  <option value="expiry_before">Expiry Before</option>
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+          {% else %}
+            <option value="--" selected="selected">--</option>
+            <option value="assessor">Assessor</option>
+            <option value="postcode">Postcode</option>
+            <option value="type">Inspection Type</option>
+            <option value="scheme">Accreditation Scheme</option>
+            <option value="expiry_before">Expiry Before</option>
+          {% endif %}
+          </select>
+        </div>
+        <div class="col-lg-5 offset-lg-1">
+          {% if postData %}
+            {% for data in postData %}
+              <input class="wide form-control-lg shadow-sm" placeholder="Is" type="text" name="search_query2" value="{{ data.query2 }}"><br>
+            {% endfor %}
+          {% else %}
+            <input class="wide form-control-lg shadow-sm" placeholder="Is" type="text" name="search_query2" value=""><br>
+          {% endif %}
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-1">
+          <label class="form-control-sm" style="font-size: 21px">And:</label>
+        </div>
+        <div class="col-lg-4">
+          <select class="form-control-lg wide" name="Category3" id="category3">
+          {% if postData %} 
+            {% for data in postData %}
+              {% if '--' in data.queryType3 %}
+                <option value="--" selected="selected">--</option>
+                <option value="assessor">Assessor</option>
+                <option value="type">Inspection Type</option>
+                <option value="postcode">Postcode</option>
+                <option value="expiry_after">Expiry After</option>
+              {% else %}
+                <option value="--">--</option>
+                {% if 'assessor' in data.queryType3 %}
+                  <option value="assessor" selected="selected">Assessor</option>
+                {% else %}
+                  <option value="assessor">Assessor</option>
+                {% endif %}
+                {% if 'type' in data.queryType3 %}
+                  <option value="type" selected="selected">Inspection Type</option>
+                {% else %}
+                  <option value="type">Inspection Type</option>
+                {% endif %}
+                {% if 'postcode' in data.queryType3 %}
+                  <option value="postcode" selected="selected">Postcode</option>
+                {% else %}
+                  <option value="postcode">Postcode</option>
+                {% endif %}
+                {% if 'expiry_after' in data.queryType3 %}
+                  <option value="expiry_after" selected="selected">Expiry After</option>
+                {% else %}
+                  <option value="expiry_after">Expiry After</option>
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+          {% else %}
+            <option value="--" selected="selected">--</option>
+            <option value="assessor">Assessor</option>
+            <option value="type">Inspection Type</option>
+            <option value="type">Postcode</option>
+            <option value="expiry_after">Expiry After</option>
+          {% endif %}
+          </select>
+        </div>
+        <div class="col-lg-5 offset-lg-1">
+          {% if postData %}
+            {% for data in postData %}
+              <input class="wide form-control-lg shadow-sm" placeholder="Is" type="text" name="search_query3" value="{{ data.query3 }}"><br>
+            {% endfor %}
+          {% else %}
+            <input class="wide form-control-lg shadow-sm" placeholder="Is" type="text" name="search_query3" value=""><br>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- SUBMIT BUTTON -->
+      <div class="col-lg-10 offset-lg-1" style="padding-top: 35px">
+        <input class="form-control sub-btn shadow" name="submit" type="submit" value="Submit">
+      </div>
+      <div class="col-lg-10 offset-lg-1 remove-restrict" style="padding-top: 35px">
+        Remove Query Restrictions? <input class="restrict-checkbox" name="restrict" type="checkbox">
+      </div>
+    </form>
+  </div>
+  {% if INdata %}
+    <div class="col-lg-4 offset-lg-5 py-5">
+      <button type="button" class="btn btn-outline-danger" onclick="location.href={% url 'main_database' %}">Reset Search</button> 
+    </div>
+  {% endif %}
+</div>
+
+{% if INdata %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+
+
+
+
+
+<div class="container" style="padding-top: 5px !important" id="display_area">
+  <form class="form-group" method="POST">
+  {% csrf_token %}
+    <table id="output_content" class="table table-striped" style="width: 100%">
+      <thead>
+        <tr>
+          {% for data in titles %}
+            <th style="text-align: left">{{ data }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+
+      {% for data in INdata %}
+        <tr>
+          {% if 'rrn' in linkType %}
+            <td>
+              <input type="checkbox" name="radio_check" value="{{data.entry1}}">
+            </td>
+            <td style="text-align: left">
+              <a href="{% url 'rrn' data.entry1 %}">
+                {{ data.entry1 }}
+              </a>
+            </td>
+          {% elif 'assessor' in linkType %}
+            <td style="text-align: left">
+              <a href="{% url 'assessor' data.entry1 %}">
+                {{ data.entry1 }}
+              </a>
+            </td>
+          {% else %}
+            <td style="text-align: left">
+              {{ data.entry1 }}
+            </td>
+          {% endif %}
+          <td style="text-align: left">
+            {{ data.entry2 }}
+          </td>
+          <td style="text-align: left">
+            {{ data.entry3 }}
+          </td>
+          <td style="text-align: left">
+            {{ data.entry4 }}
+          </td>
+          {% if data.entry5 %}
+            <td style="text-align: left">
+              {{ data.entry5 }}
+            </td>
+          {% endif %}
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% if 'rrn' in linkType %}
+      <button type="submit" name="print_doc" class="btn btn-default gen-btn shadow-lg" style="padding-top: 10px; padding-bottom: 10px">Generate Letter</button>
+    {% else %}
+    {% endif %}
+  </form>
+</div>
+
+{% endblock content %}
+

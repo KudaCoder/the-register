@@ -88,7 +88,7 @@ DATABASES = {
     #     'HOST': 'localhost',
     #     'PORT': '3306',
     # },
-    'postgres': {
+    'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2', 
         'NAME': 'registerdb',
         'USER': 'postgres',

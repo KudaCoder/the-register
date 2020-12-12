@@ -26,9 +26,12 @@ def main(request):
 	currentMonth = currentDate.strftime('%m')
 
 	certObj = Certificate.objects.all()
-	epcCount = certObj.filter(type__id=6).count()
-	tm44Count = certObj.filter(type__id=8).count()
-	decCount = certObj.filter(Q(type__id=9) | Q(type__id=10)).count()
+	epcCount = 1805
+	# certObj.filter(type__id=6).count()
+	tm44Count = 106
+	# certObj.filter(type__id=8).count()
+	decCount = 86
+	# certObj.filter(Q(type__id=9) | Q(type__id=10)).count()
 	print(epcCount, tm44Count, decCount)
 	sys.stdout.flush()
 

@@ -32,28 +32,28 @@ def main(request):
 	print(epcCount, tm44Count, decCount)
 	sys.stdout.flush()
 
-	epcExpiryData = []
-	tm44ExpiryData = []
-	decExpiryData = []
+	# epcExpiryData = []
+	# tm44ExpiryData = []
+	# decExpiryData = []
 
-	prev_half_year = currentDate - relativedelta(months=6)
-	next_half_year = currentDate + relativedelta(months=6)
+	# prev_half_year = currentDate - relativedelta(months=6)
+	# next_half_year = currentDate + relativedelta(months=6)
 
-	expiryObj = certObj.filter(expiry__range=[prev_half_year, next_half_year])
-	# raw("""SELECT c.id, count(c.id) as Quantity, to_char(expiry, 'YYYY.mm') as Expiry from certificate as c
-	# 	join type as t on t.id = c.type_id
-	# 	where expiry >= (now() - interval '6' month)
-	# 	and expiry <= (now() + interval '6' month)
-	# 	group by expiry, t.type, c.id
-	# 	order by expiry asc""")
+	# expiryObj = certObj.filter(expiry__range=[prev_half_year, next_half_year])
+	# # raw("""SELECT c.id, count(c.id) as Quantity, to_char(expiry, 'YYYY.mm') as Expiry from certificate as c
+	# # 	join type as t on t.id = c.type_id
+	# # 	where expiry >= (now() - interval '6' month)
+	# # 	and expiry <= (now() + interval '6' month)
+	# # 	group by expiry, t.type, c.id
+	# # 	order by expiry asc""")
 	
-	for entry in expiryObj:
-		if entry.type.type == 'EPC':
-			epcExpiryData.append(entry)
-		elif entry.type.type == 'TM44':
-			tm44ExpiryData.append(entry)
-		elif entry.type.type == 'DEC':
-			decExpiryData.append(entry)
+	# for entry in expiryObj:
+	# 	if entry.type.type == 'EPC':
+	# 		epcExpiryData.append(entry)
+	# 	elif entry.type.type == 'TM44':
+	# 		tm44ExpiryData.append(entry)
+	# 	elif entry.type.type == 'DEC':
+	# 		decExpiryData.append(entry)
 
 	# if 'current_month' in request.POST:
 	# 	titles = []
@@ -89,12 +89,12 @@ def main(request):
 
 	# else:
 	context = {
-	'epcCount': epcCount,
-	'tm44Count': tm44Count,
-	'decCount': decCount,
-	'epcExpiryData': epcExpiryData,
-	'tm44ExpiryData': tm44ExpiryData,
-	'decExpiryData': decExpiryData,
+		'epcCount': epcCount,
+		'tm44Count': tm44Count,
+		'decCount': decCount,
+		# 'epcExpiryData': epcExpiryData,
+		# 'tm44ExpiryData': tm44ExpiryData,
+		# 'decExpiryData': decExpiryData,
 	}
 
 	main_end_time = time.time() - main_start

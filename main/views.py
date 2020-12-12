@@ -33,62 +33,66 @@ def main(request):
 	tm44ExpiryData = []
 	decExpiryData = []
 
-	# expiryObj = certObj.raw("""SELECT c.id, count(c.id) as Quantity, to_char(expiry, 'YYYY.mm') as Expiry from certificate as c
+	prev_half_year = currentDate - datetime.timedelta(months=6)
+	next_half_year = currentDate + datetime.timedelta(months=6)
+
+	expiryObj = certObj.filter(expiry__range=[prev_half_year, next_half_year])
+	# raw("""SELECT c.id, count(c.id) as Quantity, to_char(expiry, 'YYYY.mm') as Expiry from certificate as c
 	# 	join type as t on t.id = c.type_id
 	# 	where expiry >= (now() - interval '6' month)
 	# 	and expiry <= (now() + interval '6' month)
 	# 	group by expiry, t.type, c.id
 	# 	order by expiry asc""")
 	
-	# for entry in expiryObj:
-	# 	if entry.type.type == 'EPC':
-	# 		epcExpiryData.append(entry.Quantity)
-	# 	elif entry.type.type == 'TM44':
-	# 		tm44ExpiryData.append(entry.Quantity)
-	# 	elif entry.type.type == 'DEC':
-	# 		decExpiryData.append(entry.Quantity)
+	for entry in expiryObj:
+		if entry.type.type == 'EPC':
+			epcExpiryData.append(entry.Quantity)
+		elif entry.type.type == 'TM44':
+			tm44ExpiryData.append(entry.Quantity)
+		elif entry.type.type == 'DEC':
+			decExpiryData.append(entry.Quantity)
 
-	# if 'current_month' in request.POST:
-	# 	titles = []
-	# 	INdata = []
-	# 	linkType = []
+	if 'current_month' in request.POST:
+		titles = []
+		INdata = []
+		linkType = []
 
-	# 	searchObj = Certificate.objects.raw("""SELECT * from certificate 
-	# 		where YEAR(expiry) = YEAR(CURRENT_DATE()) and MONTH(expiry) = MONTH(CURRENT_DATE()) """)
+		searchObj = Certificate.objects.raw("""SELECT * from certificate 
+			where YEAR(expiry) = YEAR(CURRENT_DATE()) and MONTH(expiry) = MONTH(CURRENT_DATE()) """)
 
-	# 	titles.extend(['', 'RRN', 'Site Address', 'Certificate Type', 'Assessor Name', 'Expiry Date'])
+		titles.extend(['', 'RRN', 'Site Address', 'Certificate Type', 'Assessor Name', 'Expiry Date'])
 
-	# 	for entry in searchObj:
-	# 		expiry = search.extract_date(object, entry.expiry)
-	# 		temp_dict = {}
-	# 		temp_dict = {'entry1': entry.rrn.rrn, 'entry2': entry.site.address, 'entry3': entry.type.type, 'entry4': entry.assessor.name, 'entry5': expiry}
-	# 		INdata.append(temp_dict)
+		for entry in searchObj:
+			expiry = search.extract_date(object, entry.expiry)
+			temp_dict = {}
+			temp_dict = {'entry1': entry.rrn.rrn, 'entry2': entry.site.address, 'entry3': entry.type.type, 'entry4': entry.assessor.name, 'entry5': expiry}
+			INdata.append(temp_dict)
 
-	# 	postData = []
-	# 	plus_one_month = datetime.now().date() + relativedelta(months=+1)
-	# 	temp_dict = {'query': '', 'queryType1': 'postcode', 'query2': datetime.now().date(), 'queryType2': 'expiry_before', 'query3': plus_one_month,'queryType3': 'expiry_after'}
-	# 	postData.append(temp_dict)
+		postData = []
+		plus_one_month = datetime.now().date() + relativedelta(months=+1)
+		temp_dict = {'query': '', 'queryType1': 'postcode', 'query2': datetime.now().date(), 'queryType2': 'expiry_before', 'query3': plus_one_month,'queryType3': 'expiry_after'}
+		postData.append(temp_dict)
 
-	# 	linkType = 'rrn'
+		linkType = 'rrn'
 
-	# 	context = {
-	# 		'INdata': INdata,
-	# 		'linkType': linkType,
-	# 		'titles': titles,
-	# 		'postData': postData,
-	# 	}
+		context = {
+			'INdata': INdata,
+			'linkType': linkType,
+			'titles': titles,
+			'postData': postData,
+		}
 
-	# 	return render(request, 'main/database.html', context)
+		return render(request, 'main/database.html', context)
 
-	# else:
-	context = {
-	'epcCount': epcCount,
-	'tm44Count': tm44Count,
-	'decCount': decCount,
-	'epcExpiryData': epcExpiryData,
-	'tm44ExpiryData': tm44ExpiryData,
-	'decExpiryData': decExpiryData,
-	}
+	else:
+		context = {
+		'epcCount': epcCount,
+		'tm44Count': tm44Count,
+		'decCount': decCount,
+		'epcExpiryData': epcExpiryData,
+		'tm44ExpiryData': tm44ExpiryData,
+		'decExpiryData': decExpiryData,
+		}
 
 	main_end_time = time.time() - main_start
 	print(main_end_time)

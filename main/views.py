@@ -35,8 +35,8 @@ def main(request):
 
 	expiryObj = certObj.raw("""SELECT c.id, count(c.id) as Quantity, date_format(expiry, '%%Y-%%m') as Expiry from certificate as c
 		join type as t on t.id = c.type_id
-		where expiry >= date_format(date_sub(now(), interval 6 month), '%%Y-%%m-%%d')
-		and expiry <= date_format(date_add(now(), interval 6 month), '%%Y-%%m-%%d')
+		where expiry >= now() - interval '6' month), '%%Y-%%m-%%d')
+		and expiry <= now() + interval '6' month), '%%Y-%%m-%%d')
 		group by month(expiry), t.type
 		order by expiry asc""")
 	

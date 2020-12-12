@@ -33,7 +33,7 @@ def main(request):
 	tm44ExpiryData = []
 	decExpiryData = []
 
-	expiryObj = certObj.raw("""SELECT count(c.id) as Quantity, to_char(expiry, 'YYYY.mm') as Expiry from certificate as c
+	expiryObj = certObj.raw("""SELECT c.id, count(c.id) as Quantity, to_char(expiry, 'YYYY.mm') as Expiry from certificate as c
 		join type as t on t.id = c.type_id
 		where expiry >= (now() - interval '6' month)
 		and expiry <= (now() + interval '6' month)

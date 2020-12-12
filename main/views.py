@@ -33,20 +33,20 @@ def main(request):
 	tm44ExpiryData = []
 	decExpiryData = []
 
-	expiryObj = certObj.raw("""SELECT c.id, count(c.id) as Quantity, to_char(expiry, 'YYYY.mm') as Expiry from certificate as c
-		join type as t on t.id = c.type_id
-		where expiry >= (now() - interval '6' month)
-		and expiry <= (now() + interval '6' month)
-		group by expiry, t.type
-		order by expiry asc""")
+	# expiryObj = certObj.raw("""SELECT c.id, count(c.id) as Quantity, to_char(expiry, 'YYYY.mm') as Expiry from certificate as c
+	# 	join type as t on t.id = c.type_id
+	# 	where expiry >= (now() - interval '6' month)
+	# 	and expiry <= (now() + interval '6' month)
+	# 	group by expiry, t.type, c.id
+	# 	order by expiry asc""")
 	
-	for entry in expiryObj:
-		if entry.type.type == 'EPC':
-			epcExpiryData.append(entry.Quantity)
-		elif entry.type.type == 'TM44':
-			tm44ExpiryData.append(entry.Quantity)
-		elif entry.type.type == 'DEC':
-			decExpiryData.append(entry.Quantity)
+	# for entry in expiryObj:
+	# 	if entry.type.type == 'EPC':
+	# 		epcExpiryData.append(entry.Quantity)
+	# 	elif entry.type.type == 'TM44':
+	# 		tm44ExpiryData.append(entry.Quantity)
+	# 	elif entry.type.type == 'DEC':
+	# 		decExpiryData.append(entry.Quantity)
 
 	# if 'current_month' in request.POST:
 	# 	titles = []

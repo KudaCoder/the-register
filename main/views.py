@@ -33,8 +33,8 @@ def main(request):
 	tm44ExpiryData = []
 	decExpiryData = []
 
-	prev_half_year = currentDate - timedelta(months=6)
-	next_half_year = currentDate + timedelta(months=6)
+	prev_half_year = currentDate - relativedelta(months=6)
+	next_half_year = currentDate + relativedelta(months=6)
 
 	expiryObj = certObj.filter(expiry__range=[prev_half_year, next_half_year])
 	# raw("""SELECT c.id, count(c.id) as Quantity, to_char(expiry, 'YYYY.mm') as Expiry from certificate as c

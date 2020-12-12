@@ -10,6 +10,7 @@ from django.contrib import messages
 from dateutil.relativedelta import *
 from datetime import datetime, timedelta
 import time
+import sys
 
 from main.utils.docPrint import docPrint
 from main.utils.search import search
@@ -28,6 +29,8 @@ def main(request):
 	epcCount = certObj.filter(type__id=6).count()
 	tm44Count = certObj.filter(type__id=8).count()
 	decCount = certObj.filter(Q(type__id=9) | Q(type__id=10)).count()
+	print(epcCount, tm44Count, decCount)
+	sys.stdout.flush()
 
 	epcExpiryData = []
 	tm44ExpiryData = []

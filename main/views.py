@@ -25,9 +25,9 @@ def main(request):
 	currentMonth = currentDate.strftime('%m')
 
 	certObj = Certificate.objects.all()
-	epcCount = certObj.filter(type__type='EPC').count()
-	tm44Count = certObj.filter(type__type='TM44').count()
-	decCount = certObj.filter(type__type='DEC').count()
+	epcCount = certObj.filter(type__id=6).count()
+	tm44Count = certObj.filter(type__id=8).count()
+	decCount = certObj.filter(Q(type__id=9) | Q(type__id=10)).count()
 
 	epcExpiryData = []
 	tm44ExpiryData = []

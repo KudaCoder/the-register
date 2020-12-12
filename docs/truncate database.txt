@@ -1,3 +1,4 @@
+SET FOREIGN_KEY_CHECKS=0;
 truncate assessor;
 truncate certificate;
 truncate complexity;
@@ -9,3 +10,4 @@ truncate rrn;
 truncate scheme;
 truncate site;
 truncate type;
+SET FOREIGN_KEY_CHECKS=1;

@@ -19,34 +19,34 @@ from main.models import *
 
 
 def main(request):
-	# main_start = time.time()
-	# currentDate = datetime.now().date()
-	# currentYear = currentDate.strftime('%Y')
-	# currentMonth = currentDate.strftime('%m')
+	main_start = time.time()
+	currentDate = datetime.now().date()
+	currentYear = currentDate.strftime('%Y')
+	currentMonth = currentDate.strftime('%m')
 
-	# certObj = Certificate.objects.all()
-	# epcCount = certObj.filter(type__id=1).count()
-	# tm44Count = certObj.filter(type__id=4).count()
-	# decCount = certObj.filter(Q(type__id=2) | Q(type__id=3)).count()
+	certObj = Certificate.objects.all()
+	epcCount = certObj.filter(type__type='EPC').count()
+	tm44Count = certObj.filter(type__type='TM44').count()
+	decCount = certObj.filter(type__type='DEC').count()
 
-	# epcExpiryData = []
-	# tm44ExpiryData = []
-	# decExpiryData = []
+	epcExpiryData = []
+	tm44ExpiryData = []
+	decExpiryData = []
 
-	# expiryObj = certObj.raw("""SELECT c.id, count(c.id) as Quantity, date_format(expiry, '%%Y-%%m') as Expiry from certificate as c
-	# 	join type as t on t.id = c.type_id
-	# 	where expiry >= date_format(date_sub(now(), interval 6 month), '%%Y-%%m-%%d')
-	# 	and expiry <= date_format(date_add(now(), interval 6 month), '%%Y-%%m-%%d')
-	# 	group by month(expiry), t.type
-	# 	order by expiry asc""")
+	expiryObj = certObj.raw("""SELECT c.id, count(c.id) as Quantity, date_format(expiry, '%%Y-%%m') as Expiry from certificate as c
+		join type as t on t.id = c.type_id
+		where expiry >= date_format(date_sub(now(), interval 6 month), '%%Y-%%m-%%d')
+		and expiry <= date_format(date_add(now(), interval 6 month), '%%Y-%%m-%%d')
+		group by month(expiry), t.type
+		order by expiry asc""")
 	
-	# for entry in expiryObj:
-	# 	if entry.type.type == 'EPC':
-	# 		epcExpiryData.append(entry.Quantity)
-	# 	elif entry.type.type == 'TM44':
-	# 		tm44ExpiryData.append(entry.Quantity)
-	# 	elif entry.type.type == 'DEC':
-	# 		decExpiryData.append(entry.Quantity)
+	for entry in expiryObj:
+		if entry.type.type == 'EPC':
+			epcExpiryData.append(entry.Quantity)
+		elif entry.type.type == 'TM44':
+			tm44ExpiryData.append(entry.Quantity)
+		elif entry.type.type == 'DEC':
+			decExpiryData.append(entry.Quantity)
 
 	# if 'current_month' in request.POST:
 	# 	titles = []
@@ -80,19 +80,19 @@ def main(request):
 
 	# 	return render(request, 'main/database.html', context)
 
-	# else:
-	# 	context = {
-	# 	'epcCount': epcCount,
-	# 	'tm44Count': tm44Count,
-	# 	'decCount': decCount,
-	# 	'epcExpiryData': epcExpiryData,
-	# 	'tm44ExpiryData': tm44ExpiryData,
-	# 	'decExpiryData': decExpiryData,
-	# }
+	else:
+		context = {
+		'epcCount': epcCount,
+		'tm44Count': tm44Count,
+		'decCount': decCount,
+		'epcExpiryData': epcExpiryData,
+		'tm44ExpiryData': tm44ExpiryData,
+		'decExpiryData': decExpiryData,
+	}
 
-	# main_end_time = time.time() - main_start
-	# print(main_end_time)
-	return render(request, 'main/main.html', {})
+	main_end_time = time.time() - main_start
+	print(main_end_time)
+	return render(request, 'main/main.html', context)
 
 @login_required(login_url='login')
 def database(request):

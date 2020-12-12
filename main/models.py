@@ -9,8 +9,8 @@ from django.db import models
 
 
 class Assessor(models.Model):
-    name = models.CharField(max_length=150, db_index=True)
-    scheme_number = models.CharField(max_length=50, db_index=True)
+    name = models.CharField(blank=True, null=True, max_length=150, db_index=True)
+    scheme_number = models.CharField(blank=True, null=True, max_length=50, db_index=True)
 
     class Meta:
         managed = True
@@ -18,7 +18,7 @@ class Assessor(models.Model):
 
 
 class Complexity(models.Model):
-    rating = models.CharField(max_length=10)
+    rating = models.CharField(null=True, max_length=10)
 
     class Meta:
         managed = True
@@ -26,8 +26,8 @@ class Complexity(models.Model):
 
 
 class Employer(models.Model):
-    name = models.CharField(max_length=150, db_index=True)
-    address = models.CharField(max_length=500, db_index=True)
+    name = models.CharField(blank=True, null=True, max_length=150, db_index=True)
+    address = models.CharField(blank=True, null=True, max_length=500, db_index=True)
 
     class Meta:
         managed = True
@@ -35,7 +35,7 @@ class Employer(models.Model):
 
 
 class Environment(models.Model):
-    type = models.CharField(max_length=255)
+    type = models.CharField(blank=True, null=True, max_length=255)
 
     class Meta:
         managed = True
@@ -43,7 +43,7 @@ class Environment(models.Model):
 
 
 class Heating(models.Model):
-    type = models.CharField(max_length=150)
+    type = models.CharField(blank=True, null=True, max_length=150)
 
     class Meta:
         managed = True
@@ -51,7 +51,7 @@ class Heating(models.Model):
 
 
 class Postcode(models.Model):
-    postcode = models.CharField(max_length=10, db_index=True)
+    postcode = models.CharField(blank=True, null=True, max_length=10, db_index=True)
 
     class Meta:
         managed = True
@@ -59,7 +59,7 @@ class Postcode(models.Model):
 
 
 class RRN(models.Model):
-    rrn = models.CharField(max_length=30, db_index=True)
+    rrn = models.CharField(blank=True, null=True, max_length=30, db_index=True)
 
     class Meta:
         managed = True
@@ -67,7 +67,7 @@ class RRN(models.Model):
 
 
 class Scheme(models.Model):
-    accred_scheme = models.CharField(max_length=255, db_index=True)
+    accred_scheme = models.CharField(blank=True, null=True, max_length=255, db_index=True)
 
     class Meta:
         managed = True
@@ -75,7 +75,7 @@ class Scheme(models.Model):
 
 
 class Site(models.Model):
-    address = models.CharField(max_length=500, db_index=True)
+    address = models.CharField(blank=True, null=True, max_length=500, db_index=True)
 
     class Meta:
         managed = True
@@ -83,7 +83,7 @@ class Site(models.Model):
 
 
 class Type(models.Model):
-    type = models.CharField(max_length=25, db_index=True)
+    type = models.CharField(blank=True, null=True, max_length=25, db_index=True)
 
     class Meta:
         managed = True
@@ -91,20 +91,20 @@ class Type(models.Model):
 
 
 class Certificate(models.Model):
-    epc_rating = models.IntegerField(db_index=False)
+    epc_rating = models.IntegerField(null=True, db_index=False)
     building_area = models.IntegerField(db_index=False)
     building_emissions = models.DecimalField(max_digits=6, decimal_places=2, db_index=False)
     energy_usage = models.DecimalField(max_digits=6, decimal_places=2, db_index=False)
     refrig_weight = models.IntegerField(db_index=False)
     ac_output = models.IntegerField(db_index=False)
-    annual_heating = models.CharField(max_length=50, db_index=False)
-    renewable_heating = models.CharField(max_length=50, db_index=False)
-    annual_electric = models.CharField(max_length=50, db_index=False)
-    typical_heating = models.CharField(max_length=50, db_index=False)
-    typical_electric = models.CharField(max_length=50, db_index=False)
-    renewable_electric = models.CharField(max_length=50, db_index=False)
+    annual_heating = models.CharField(blank=True, null=True, max_length=50, db_index=False)
+    renewable_heating = models.CharField(blank=True, null=True, max_length=50, db_index=False)
+    annual_electric = models.CharField(blank=True, null=True, max_length=50, db_index=False)
+    typical_heating = models.CharField(blank=True, null=True, max_length=50, db_index=False)
+    typical_electric = models.CharField(blank=True, null=True, max_length=50, db_index=False)
+    renewable_electric = models.CharField(blank=True, null=True, max_length=50, db_index=False)
     expiry = models.DateField(db_index=True)
-    manager = models.CharField(max_length=100, db_index=False)
+    manager = models.CharField(blank=True, null=True, max_length=100, db_index=False)
     rrn = models.ForeignKey(RRN, on_delete=models.CASCADE)
     type = models.ForeignKey(Type, on_delete=models.CASCADE)
     postcode = models.ForeignKey(Postcode, on_delete=models.CASCADE)

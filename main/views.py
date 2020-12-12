@@ -84,15 +84,15 @@ def main(request):
 
 	# 	return render(request, 'main/database.html', context)
 
-	else:
-		context = {
-		'epcCount': epcCount,
-		'tm44Count': tm44Count,
-		'decCount': decCount,
-		'epcExpiryData': epcExpiryData,
-		'tm44ExpiryData': tm44ExpiryData,
-		'decExpiryData': decExpiryData,
-		}
+	# else:
+	context = {
+	'epcCount': epcCount,
+	'tm44Count': tm44Count,
+	'decCount': decCount,
+	'epcExpiryData': epcExpiryData,
+	'tm44ExpiryData': tm44ExpiryData,
+	'decExpiryData': decExpiryData,
+	}
 
 	main_end_time = time.time() - main_start
 	print(main_end_time)

@@ -46,43 +46,43 @@ def main(request):
 	
 	for entry in expiryObj:
 		if entry.type.type == 'EPC':
-			epcExpiryData.append(entry.Quantity)
+			epcExpiryData.append(entry)
 		elif entry.type.type == 'TM44':
-			tm44ExpiryData.append(entry.Quantity)
+			tm44ExpiryData.append(entry)
 		elif entry.type.type == 'DEC':
-			decExpiryData.append(entry.Quantity)
+			decExpiryData.append(entry)
 
-	if 'current_month' in request.POST:
-		titles = []
-		INdata = []
-		linkType = []
+	# if 'current_month' in request.POST:
+	# 	titles = []
+	# 	INdata = []
+	# 	linkType = []
 
-		searchObj = Certificate.objects.raw("""SELECT * from certificate 
-			where YEAR(expiry) = YEAR(CURRENT_DATE()) and MONTH(expiry) = MONTH(CURRENT_DATE()) """)
+	# 	searchObj = Certificate.objects.raw("""SELECT * from certificate 
+	# 		where YEAR(expiry) = YEAR(CURRENT_DATE()) and MONTH(expiry) = MONTH(CURRENT_DATE()) """)
 
-		titles.extend(['', 'RRN', 'Site Address', 'Certificate Type', 'Assessor Name', 'Expiry Date'])
+	# 	titles.extend(['', 'RRN', 'Site Address', 'Certificate Type', 'Assessor Name', 'Expiry Date'])
 
-		for entry in searchObj:
-			expiry = search.extract_date(object, entry.expiry)
-			temp_dict = {}
-			temp_dict = {'entry1': entry.rrn.rrn, 'entry2': entry.site.address, 'entry3': entry.type.type, 'entry4': entry.assessor.name, 'entry5': expiry}
-			INdata.append(temp_dict)
+	# 	for entry in searchObj:
+	# 		expiry = search.extract_date(object, entry.expiry)
+	# 		temp_dict = {}
+	# 		temp_dict = {'entry1': entry.rrn.rrn, 'entry2': entry.site.address, 'entry3': entry.type.type, 'entry4': entry.assessor.name, 'entry5': expiry}
+	# 		INdata.append(temp_dict)
 
-		postData = []
-		plus_one_month = datetime.now().date() + relativedelta(months=+1)
-		temp_dict = {'query': '', 'queryType1': 'postcode', 'query2': datetime.now().date(), 'queryType2': 'expiry_before', 'query3': plus_one_month,'queryType3': 'expiry_after'}
-		postData.append(temp_dict)
+	# 	postData = []
+	# 	plus_one_month = datetime.now().date() + relativedelta(months=+1)
+	# 	temp_dict = {'query': '', 'queryType1': 'postcode', 'query2': datetime.now().date(), 'queryType2': 'expiry_before', 'query3': plus_one_month,'queryType3': 'expiry_after'}
+	# 	postData.append(temp_dict)
 
-		linkType = 'rrn'
+	# 	linkType = 'rrn'
 
-		context = {
-			'INdata': INdata,
-			'linkType': linkType,
-			'titles': titles,
-			'postData': postData,
-		}
+	# 	context = {
+	# 		'INdata': INdata,
+	# 		'linkType': linkType,
+	# 		'titles': titles,
+	# 		'postData': postData,
+	# 	}
 
-		return render(request, 'main/database.html', context)
+	# 	return render(request, 'main/database.html', context)
 
 	else:
 		context = {

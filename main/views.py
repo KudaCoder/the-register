@@ -21,19 +21,15 @@ from main.models import *
 
 def main(request):
 	main_start = time.time()
+
 	currentDate = datetime.now().date()
 	currentYear = currentDate.strftime('%Y')
 	currentMonth = currentDate.strftime('%m')
 
 	certObj = Certificate.objects.all()
-	epcCount = 1805
-	# certObj.filter(type__id=6).count()
-	tm44Count = 106
-	# certObj.filter(type__id=8).count()
-	decCount = 86
-	# certObj.filter(Q(type__id=9) | Q(type__id=10)).count()
-	print(epcCount, tm44Count, decCount)
-	sys.stdout.flush()
+	epcCount = certObj.filter(type__id=1).count()
+	tm44Count = certObj.filter(type__id=4).count()
+	decCount = certObj.filter(Q(type__id=2) | Q(type__id=3)).count()
 
 	epcExpiryData = []
 	tm44ExpiryData = []
@@ -42,67 +38,63 @@ def main(request):
 	prev_half_year = currentDate - relativedelta(months=6)
 	next_half_year = currentDate + relativedelta(months=6)
 
-	expiryObj = certObj.filter(expiry__range=[prev_half_year, next_half_year])
-	# raw("""SELECT c.id, count(c.id) as Quantity, to_char(expiry, 'YYYY.mm') as Expiry from certificate as c
-	# 	join type as t on t.id = c.type_id
-	# 	where expiry >= (now() - interval '6' month)
-	# 	and expiry <= (now() + interval '6' month)
-	# 	group by expiry, t.type, c.id
-	# 	order by expiry asc""")
-	
+	expiryObj = certObj.filter(expiry__range=[prev_half_year, next_half_year]).values_list('expiry__year', 'expiry__month', 'type__type').annotate(Count('type__id')).order_by('expiry__year')
+
 	for entry in expiryObj:
-		if entry.type.type == 'EPC':
-			epcExpiryData.append(entry)
-		elif entry.type.type == 'TM44':
-			tm44ExpiryData.append(entry)
-		elif entry.type.type == 'DEC':
-			decExpiryData.append(entry)
+		if 'EPC' in entry:
+			epcExpiryData.append(entry[3])
+		elif 'TM44' in entry:
+			tm44ExpiryData.append(entry[3])
+		elif 'DEC' in entry:
+			decExpiryData.append(entry[3])
 
-	# if 'current_month' in request.POST:
-	# 	titles = []
-	# 	INdata = []
-	# 	linkType = []
+	if 'current_month' in request.POST:
+		titles = []
+		INdata = []
+		linkType = []
 
-	# 	searchObj = Certificate.objects.raw("""SELECT * from certificate 
-	# 		where YEAR(expiry) = YEAR(CURRENT_DATE()) and MONTH(expiry) = MONTH(CURRENT_DATE()) """)
+		searchObj = Certificate.objects.filter(Q(expiry__month=currentMonth) & Q(expiry__year=currentYear)).exclude(type_id=3).order_by('-expiry')[:1000]
 
-	# 	titles.extend(['', 'RRN', 'Site Address', 'Certificate Type', 'Assessor Name', 'Expiry Date'])
+		# ("""SELECT * from certificate 
+		# 	where YEAR(expiry) = YEAR(CURRENT_DATE()) and MONTH(expiry) = MONTH(CURRENT_DATE()) """)
 
-	# 	for entry in searchObj:
-	# 		expiry = search.extract_date(object, entry.expiry)
-	# 		temp_dict = {}
-	# 		temp_dict = {'entry1': entry.rrn.rrn, 'entry2': entry.site.address, 'entry3': entry.type.type, 'entry4': entry.assessor.name, 'entry5': expiry}
-	# 		INdata.append(temp_dict)
+		titles.extend(['', 'RRN', 'Site Address', 'Certificate Type', 'Assessor Name', 'Expiry Date'])
 
-	# 	postData = []
-	# 	plus_one_month = datetime.now().date() + relativedelta(months=+1)
-	# 	temp_dict = {'query': '', 'queryType1': 'postcode', 'query2': datetime.now().date(), 'queryType2': 'expiry_before', 'query3': plus_one_month,'queryType3': 'expiry_after'}
-	# 	postData.append(temp_dict)
+		for entry in searchObj:
+			expiry = search.extract_date(object, entry.expiry)
+			temp_dict = {'entry1': entry.rrn.rrn, 'entry2': entry.site.address, 'entry3': entry.type.type, 'entry4': entry.assessor.name, 'entry5': expiry}
+			INdata.append(temp_dict)
 
-	# 	linkType = 'rrn'
+		postData = []
+		plus_one_month = datetime.now().date() + relativedelta(months=+1)
+		temp_dict = {'query': '', 'queryType1': 'postcode', 'query2': datetime.now().date(), 'queryType2': 'expiry_before', 'query3': plus_one_month,'queryType3': 'expiry_after'}
+		postData.append(temp_dict)
 
-	# 	context = {
-	# 		'INdata': INdata,
-	# 		'linkType': linkType,
-	# 		'titles': titles,
-	# 		'postData': postData,
-	# 	}
+		linkType = 'rrn'
 
-	# 	return render(request, 'main/database.html', context)
+		context = {
+			'INdata': INdata,
+			'linkType': linkType,
+			'titles': titles,
+			'postData': postData,
+		}
 
-	# else:
-	context = {
-		'epcCount': epcCount,
-		'tm44Count': tm44Count,
-		'decCount': decCount,
-		# 'epcExpiryData': epcExpiryData,
-		# 'tm44ExpiryData': tm44ExpiryData,
-		# 'decExpiryData': decExpiryData,
-	}
+		return render(request, 'main/database.html', context)
 
-	main_end_time = time.time() - main_start
-	print(main_end_time)
-	return render(request, 'main/main.html', context)
+	else:
+		context = {
+			'epcCount': epcCount,
+			'tm44Count': tm44Count,
+			'decCount': decCount,
+			'epcExpiryData': epcExpiryData,
+			'tm44ExpiryData': tm44ExpiryData,
+			'decExpiryData': decExpiryData,
+		}
+
+		main_end_time = time.time() - main_start
+		print(main_end_time)
+		
+		return render(request, 'main/main.html', context)
 
 @login_required(login_url='login')
 def database(request):

@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
+import private
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -20,7 +21,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'evx1cl6(!vti$b5ee%yifdz%#9c0###(t)qs@hl-g^3$*ivmll'
+SECRET_KEY = private.SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -62,7 +63,9 @@ ROOT_URLCONF = 'register.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            'C:/Users/Kuda/Documents/Python_Projects/to_do/frontend/public'
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -82,22 +85,22 @@ WSGI_APPLICATION = 'register.wsgi.application'
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.mysql', 
-    #     'NAME': 'registry',
-    #     'USER': 'root',
-    #     'PASSWORD': '',
-    #     'HOST': 'localhost',
-    #     'PORT': '3306',
-    # },
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2', 
-        'NAME': 'd46a4tggtahblp',
-        'USER': 'rcrqlxoakngijp',
-        'PASSWORD': '0ee1d917e6e4ea9eaf98e2b6b114f9479814c676ee1ee204f5b899b7b92e1ac2',
-        'HOST': 'ec2-54-247-122-209.eu-west-1.compute.amazonaws.com',
-        'PORT': '5432',
-    }
+        'ENGINE': 'django.db.backends.mysql', 
+        'NAME': 'registry',
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': 'localhost',
+        'PORT': '3306',
+    },
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql_psycopg2', 
+    #     'NAME': 'd46a4tggtahblp',
+    #     'USER': 'rcrqlxoakngijp',
+    #     'PASSWORD': '0ee1d917e6e4ea9eaf98e2b6b114f9479814c676ee1ee204f5b899b7b92e1ac2',
+    #     'HOST': 'ec2-54-247-122-209.eu-west-1.compute.amazonaws.com',
+    #     'PORT': '5432',
+    # }
 }
 
 # LOGGING = {

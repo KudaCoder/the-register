@@ -1,3 +1,4 @@
+from django.views.generic import TemplateView
 from django.urls import path
 from . import views
 
@@ -9,4 +10,5 @@ urlpatterns = [
 		path('login/', views.loginPage, name='login'),
 		path('logoutUser/', views.logoutUser, name='logout'),
 		path('register/', views.register, name='register'),
+		path('todo/', TemplateView.as_view(template_name='index.html'), name='todo'),
 ]

@@ -21,88 +21,84 @@ from main.models import *
 
 def main(request):
 	main_start = time.time()
+
+	# Setting global date objects for later use
 	currentDate = datetime.now().date()
 	currentYear = currentDate.strftime('%Y')
 	currentMonth = currentDate.strftime('%m')
+	prev_half_year = currentDate - relativedelta(months=6)
+	next_half_year = currentDate + relativedelta(months=6)
+	plus_one_month = currentDate + relativedelta(months=1)
 
+	# Main queryset
 	certObj = Certificate.objects.all()
-	epcCount = 1805
-	# certObj.filter(type__id=6).count()
-	tm44Count = 106
-	# certObj.filter(type__id=8).count()
-	decCount = 86
-	# certObj.filter(Q(type__id=9) | Q(type__id=10)).count()
-	print(epcCount, tm44Count, decCount)
-	sys.stdout.flush()
 
-	# epcExpiryData = []
-	# tm44ExpiryData = []
-	# decExpiryData = []
+	epcCount = certObj.filter(type__id=1).count()
+	tm44Count = certObj.filter(type__id=4).count()
+	decCount = certObj.filter(Q(type__id=2) | Q(type__id=3)).count()
 
-	# prev_half_year = currentDate - relativedelta(months=6)
-	# next_half_year = currentDate + relativedelta(months=6)
+	epcExpiryData = []
+	tm44ExpiryData = []
+	decExpiryData = []
 
-	# expiryObj = certObj.filter(expiry__range=[prev_half_year, next_half_year])
-	# # raw("""SELECT c.id, count(c.id) as Quantity, to_char(expiry, 'YYYY.mm') as Expiry from certificate as c
-	# # 	join type as t on t.id = c.type_id
-	# # 	where expiry >= (now() - interval '6' month)
-	# # 	and expiry <= (now() + interval '6' month)
-	# # 	group by expiry, t.type, c.id
-	# # 	order by expiry asc""")
-	
-	# for entry in expiryObj:
-	# 	if entry.type.type == 'EPC':
-	# 		epcExpiryData.append(entry)
-	# 	elif entry.type.type == 'TM44':
-	# 		tm44ExpiryData.append(entry)
-	# 	elif entry.type.type == 'DEC':
-	# 		decExpiryData.append(entry)
+	# Querset to return all rows with an expiry date +/- 6 months from current month then separate into 3 lists of EPC, TM44 & DEC
+	expiryObj = certObj.filter(expiry__range=[prev_half_year, next_half_year]).values_list('expiry__year', 'expiry__month', 'type__type').annotate(Count('type__id')).order_by('expiry__year') # expiryObj returns 3 element tuple
+	for entry in expiryObj:
+		if 'EPC' in entry:
+			epcExpiryData.append(entry[3])
+		elif 'TM44' in entry:
+			tm44ExpiryData.append(entry[3])
+		elif 'DEC' in entry:
+			decExpiryData.append(entry[3])
 
-	# if 'current_month' in request.POST:
-	# 	titles = []
-	# 	INdata = []
-	# 	linkType = []
+	# If show current month button pressed on main page
+	if 'current_month' in request.POST:
+		titles = []
+		INdata = []
+		linkType = []
 
-	# 	searchObj = Certificate.objects.raw("""SELECT * from certificate 
-	# 		where YEAR(expiry) = YEAR(CURRENT_DATE()) and MONTH(expiry) = MONTH(CURRENT_DATE()) """)
+		# Queryset to return all rows with an expiry date in the current month & year
+		searchObj = certObj.filter(Q(expiry__month=currentMonth) & Q(expiry__year=currentYear)).exclude(type_id=3).order_by('-expiry')[:1000]
 
-	# 	titles.extend(['', 'RRN', 'Site Address', 'Certificate Type', 'Assessor Name', 'Expiry Date'])
+		# Set titles & display data for datatables on database page
+		titles.extend(['', 'RRN', 'Site Address', 'Certificate Type', 'Assessor Name', 'Expiry Date'])
 
-	# 	for entry in searchObj:
-	# 		expiry = search.extract_date(object, entry.expiry)
-	# 		temp_dict = {}
-	# 		temp_dict = {'entry1': entry.rrn.rrn, 'entry2': entry.site.address, 'entry3': entry.type.type, 'entry4': entry.assessor.name, 'entry5': expiry}
-	# 		INdata.append(temp_dict)
+		for entry in searchObj:
+			expiry = search.extract_date(object, entry.expiry)
+			temp_dict = {'entry1': entry.rrn.rrn, 'entry2': entry.site.address, 'entry3': entry.type.type, 'entry4': entry.assessor.name, 'entry5': expiry}
+			INdata.append(temp_dict)
 
-	# 	postData = []
-	# 	plus_one_month = datetime.now().date() + relativedelta(months=+1)
-	# 	temp_dict = {'query': '', 'queryType1': 'postcode', 'query2': datetime.now().date(), 'queryType2': 'expiry_before', 'query3': plus_one_month,'queryType3': 'expiry_after'}
-	# 	postData.append(temp_dict)
+		# Set a postData list which contains data to populate the search fields at the top of the database page
+		postData = []
+		temp_dict = {'query': '', 'queryType1': 'postcode', 'query2': currentDate, 'queryType2': 'expiry_before', 'query3': plus_one_month,'queryType3': 'expiry_after'}
+		postData.append(temp_dict)
 
-	# 	linkType = 'rrn'
+		# Set the correct linktype so the datatable show the correct titles
+		linkType = 'rrn'
 
-	# 	context = {
-	# 		'INdata': INdata,
-	# 		'linkType': linkType,
-	# 		'titles': titles,
-	# 		'postData': postData,
-	# 	}
+		context = {
+			'INdata': INdata,
+			'linkType': linkType,
+			'titles': titles,
+			'postData': postData,
+		}
 
-	# 	return render(request, 'main/database.html', context)
+		return render(request, 'main/database.html', context)
 
-	# else:
-	context = {
-		'epcCount': epcCount,
-		'tm44Count': tm44Count,
-		'decCount': decCount,
-		# 'epcExpiryData': epcExpiryData,
-		# 'tm44ExpiryData': tm44ExpiryData,
-		# 'decExpiryData': decExpiryData,
-	}
+	else:
+		context = {
+			'epcCount': epcCount,
+			'tm44Count': tm44Count,
+			'decCount': decCount,
+			'epcExpiryData': epcExpiryData,
+			'tm44ExpiryData': tm44ExpiryData,
+			'decExpiryData': decExpiryData,
+		}
 
-	main_end_time = time.time() - main_start
-	print(main_end_time)
-	return render(request, 'main/main.html', context)
+		main_end_time = time.time() - main_start
+		print(main_end_time)
+		
+		return render(request, 'main/main.html', context)
 
 @login_required(login_url='login')
 def database(request):
@@ -110,13 +106,15 @@ def database(request):
 
 	base_qs = Certificate.objects.all().exclude(type__id=3)
 
+	# This generates the reminder letter if the 'generate letter' button presses on database page
 	if request.method == 'POST' and 'print_doc' in request.POST:
 		rrnList = request.POST.getlist("radio_check")
 		outDoc = docPrint(base_qs, rrnList)
 		
 		return render(request, 'main/database.html', {})
 
-	# # THIS SECTION APPLIES USER QUERIES TO VARIABLES AND RETURNS THEM AS 'POSTDATA' TO PRE-FILL SEARCH QUERY FORM
+	# Set a postData list which contains data to populate the search fields at the top of the database page
+	# Data is gained from the search field user input on the database page
 	elif request.method == "POST":
 		query = request.POST.get("search_query")
 		query2 = request.POST.get("search_query2")
@@ -129,6 +127,7 @@ def database(request):
 		temp_dict = {'query': query, 'query2': query2, 'query3': query3, 'queryType1': queryType1, 'queryType2': queryType2, 'queryType3': queryType3}
 		postData.append(temp_dict)
 
+		# Set the query restrictions global - If set True all searches are limited to 1000 rows
 		if request.POST.get('restrict'):
 			restrict = False
 		else:
@@ -136,7 +135,7 @@ def database(request):
 
 		OUTdata = search(base_qs, query, query2, query3, queryType1, queryType2, queryType3, restrict)
 
-		# # CREATE CLASS OBJECT IN UTILS/SEARCH.PY/'SEARCH' TO COMPILE SEARCH OUTPUT AS ONE DICTIONARY AND DYNAMICALLY CREATE THE HTML TO SUIT OUTPUT 
+		# Set utils.search output to variables for html context and datatable population
 		INdata = OUTdata.combinedData
 		titles = OUTdata.titles
 		linkType = OUTdata.linkType
@@ -155,22 +154,14 @@ def database(request):
 		return render(request, 'main/database.html', {})
 
 def rrn(request, rrn):
-	rrnData = []
 
-	searchObj = Certificate.objects.all().filter(rrn__rrn=rrn)
-
-	for entry in searchObj:
-		postcode = entry.postcode.postcode
-		complexity = entry.complexity.rating
-		employer = entry.employer.name
-		employerAddress = entry.employer.address
-		assessor = entry.assessor.name
-		accred_number = entry.assessor.scheme_number
-		scheme = entry.scheme.accred_scheme
-		area = entry.building_area
-		site = entry.site.address
-
-		if site.split(',') == []:
+	def format_address(site):
+		if not site:
+			address_line_1 = 'No Address Provided'
+			address_line_2 = ''
+			address_line_3 = ''
+			address_line_4 = ''
+		elif site.split(',') == []:
 			address_line_1 = site
 			address_line_2 = ''
 			address_line_3 = ''
@@ -192,73 +183,78 @@ def rrn(request, rrn):
 			except:
 				address_line_4 = ''
 
-		# SET THE FIELDS WHICH ARE SHARED BY ALL CERTIFICATES
-		temp_dict = {'rrn': rrn, 'postcode': postcode, 'site': site, 'complexity': complexity, 'employer': employer, 'employerAddress': employerAddress, 
-		'assessor': assessor, 'number': accred_number, 'scheme': scheme, 'expiry': entry.expiry, 'area': area, 'address_line_1': address_line_1, 'address_line_2': address_line_2, 
-		'address_line_3': address_line_3, 'address_line_4': address_line_4}
+		return address_line_1, address_line_2, address_line_3, address_line_4
 
-		# SET THE ADDITIONAL FIELDS SPECIFIC TO EPCs
-		if entry.type.type == 'EPC':
-			certType = 'EPC'
-			heating = entry.heating.type
-			environ = entry.environment.type
-			rating = entry.epc_rating
-			emissions = entry.building_emissions
-			energy = entry.energy_usage
 
-			epc_dict = {'certType': certType, 'heating': heating, 'environment': environ, 'rating': rating, 'emissions': emissions, 'energy': energy}
-			temp_dict.update(epc_dict)
-			
-		# SET THE ADDITIONAL FIELDS SPECIFIC TO TM44s
-		elif entry.type.type == 'TM44':
-			certType = 'TM44'
-			manager = entry.manager
-			refrig = entry.refrig_weight
-			ac = entry.ac_output
+	rrnData = []
+	temp_dict = {}
 
-			tm44_dict = {'certType': certType, 'ac': ac, 'refrig': refrig, 'manager': manager}
-			temp_dict.update(tm44_dict)
-			
-		rrnData.append(temp_dict)
+	rrnObj = Certificate.objects.get(rrn__rrn=rrn)
 
+	# Check if address is more than 1 line and, if so, separate out into individual lines for better display
+	site = rrnObj.site.address
+
+	address_line_1, address_line_2, address_line_3, address_line_4 = format_address(site)
+
+	# Populate dictionary with data shared by all certificate entries for display on rrn page
+	temp_dict = {'rrn': rrn, 'postcode': rrnObj.postcode.postcode, 'site': site, 'complexity': rrnObj.complexity.rating, 'employer': rrnObj.employer.name, 'employerAddress': rrnObj.employer.address, 
+	'assessor': rrnObj.assessor.name, 'number': rrnObj.assessor.scheme_number, 'scheme': rrnObj.scheme.accred_scheme, 'expiry': rrnObj.expiry, 'area': rrnObj.building_area, 'address_line_1': address_line_1, 'address_line_2': address_line_2, 'address_line_3': address_line_3, 'address_line_4': address_line_4}
+
+	# Set additional fields specific to EPCs
+	if rrnObj.type.type == 'EPC':
+		certType = 'EPC'
+		epc_dict = {'certType': certType, 'heating': rrnObj.heating.type, 'environment': rrnObj.environment.type, 'rating': rrnObj.epc_rating, 'emissions': rrnObj.building_emissions, 'energy': rrnObj.energy_usage}
+		temp_dict.update(epc_dict)
+		
+	# Set additional fields specific to TM44s
+	elif rrnObj.type.type == 'TM44':
+		certType = 'TM44'
+		tm44_dict = {'certType': certType, 'ac': rrnObj.ac_output, 'refrig': rrnObj.refrig_weight, 'manager': rrnObj.manager}
+		temp_dict.update(tm44_dict)
+
+	# Set additional fields specific to TM44s
+	elif rrnObj.type.type == 'DEC':
+		certType = 'DEC'
+		dec_dict = {'certType': certType, 'annual_electric': rrnObj.annual_electric, 'typical_electric': rrnObj.typical_electric, 'renewable_electric': rrnObj.renewable_electric, 'annual_heating': rrnObj.annual_heating, 'typical_heating': rrnObj.typical_heating, 'renewable_heating': rrnObj.renewable_heating}
+		temp_dict.update(dec_dict)
+		
+	rrnData.append(temp_dict)
+
+	# Collecting data within each foreign key table to populate drop down menus on edit page
+	# Only need to gather columns from tables with specific rows such as 'environment' or 'type' as these have only a specific number of possibles for all entries in database
 	if request.method == 'POST' and 'edit' in request.POST:
 		typeData = []
 		typeObj = Type.objects.all()
 		for entry in typeObj:
-			temp_dict = {}
-			temp_dict = {'type': entry.type}
-			typeData.append(temp_dict)
+			type_dict = {'type': entry.type}
+			typeData.append(type_dict)
 
 		schemeData = []
 		schemeObj = Scheme.objects.all()
 		for entry in schemeObj:
-			temp_dict = {}
-			temp_dict = {'scheme': entry.accred_scheme}
-			schemeData.append(temp_dict)
+			scheme_dict = {'scheme': entry.accred_scheme}
+			schemeData.append(scheme_dict)
 
 		compData = []
 		compObj = Complexity.objects.all()
 		for entry in compObj:
-			temp_dict = {}
-			temp_dict = {'comp': entry.rating}
-			compData.append(temp_dict)
+			rating_dict = {'comp': entry.rating}
+			compData.append(rating_dict)
 
 		envData = []
 		envObj = Environment.objects.all()
 		for entry in envObj:
-			temp_dict = {}
-			temp_dict = {'environment': entry.type}
-			envData.append(temp_dict)
+			environ_dict = {'environment': entry.type}
+			envData.append(environ_dict)
 
 		heatData = []
 		heatObj = Heating.objects.all()
 		for entry in heatObj:
-			temp_dict = {}
-			temp_dict = {'heating': entry.type}
-			heatData.append(temp_dict)
+			heat_dict = {'heating': entry.type}
+			heatData.append(heat_dict)
 
 		context = {
-			'data': rrnData,
+			'data': rrnData, # Used to populate the placeholders with current data of entry
 			'typeData': typeData,
 			'schemeData': schemeData,
 			'compData': compData,
@@ -273,24 +269,14 @@ def rrn(request, rrn):
 	elif request.method == 'POST' and 'change' in request.POST:
 		certObj = Certificate.objects.get(rrn__rrn=rrn)
 		rrnID = certObj.rrn_id
-
 		check_list = []
 
-		# Add regex to ensure RRN is entered in correct format
-		if request.POST.get("rrn_check"):
-			check_list.append('rrn_check')
-			new_rrn = request.POST.get('rrn')
-
-			r = Certificate.objects.get(rrn_id=rrnID)
-			r.rrn.rrn = new_rrn
-			r.save()
-
-			r2 = {'rrn': new_rrn}
-			for entry in rrnData:
-				entry.update(r2)
-
+		# Use new type from user input to retrieve appropriate type ID
 		if request.POST.get("type_check"):
 			new_type = request.POST.get('type')
+			rrnData[0]['certType'] = new_type
+			
+			# Only specific types so check for ID of new type and update certificate typeID appropriately
 			typeObj = Type.objects.get(type=new_type)
 			newTypeID = typeObj.id
 
@@ -298,81 +284,73 @@ def rrn(request, rrn):
 			t.type_id = newTypeID
 			t.save()
 
-			t2 = {'certType': new_type}
-			for entry in rrnData:
-				entry.update(t2)
-
 		# Add check for duplicates
 		if request.POST.get("site_check"):
-			new_site = request.POST.get('site')
+			new_site = request.POST.get('site_address')
+			address_line_1, address_line_2, address_line_3, address_line_4 = format_address(new_site)
+			rrnData[0]['site'] = new_site
+			rrnData[0]['address_line_1'] = address_line_1
+			rrnData[0]['address_line_2'] = address_line_2
+			rrnData[0]['address_line_3'] = address_line_3
+			rrnData[0]['address_line_4'] = address_line_4
+			
+			current_siteID = certObj.site_id
 
-			s = Certificate.objects.get(rrn_id=rrnID)
-			s.site.address = new_site
+			s = Site.objects.get(id=current_siteID)
+			s.address = new_site
 			s.save()
-
-			s2 = {'site': new_site}
-			for entry in rrnData:
-				entry.update(s2)
 
 		# Want to add a check on assessor and number to see if the previous name/number combination is still being used anywhere in the DB
 		# if the Certificate.assessor_id was changed instead of the Assessor table values
 		if request.POST.get("assessor_check"):
 			new_assessor = request.POST.get('assessor')
+			current_number = rrnData[0]['number']
+			rrnData[0]['assessor'] = new_assessor
 
-			for entry in rrnData:
-				number = entry['number']
-
-			if Assessor.objects.filter(Q(name=new_assessor) & Q(scheme_number=number)):
-				assessorObj = Certificate.objects.get(Q(assessor__name=new_assessor) & Q(assessor__scheme_number=number))
+			# Checks if the new assessor name is in the database with an existing number and sets the certificate assessorID appropriately
+			if Assessor.objects.filter(Q(name=new_assessor) & Q(scheme_number=current_number)):
+				assessorObj = Certificate.objects.get(Q(assessor__name=new_assessor) & Q(assessor__scheme_number=current_number))
 				newAssessorID = assessorObj.assessor_id
 
 				a = Certificate.objects.get(rrn_id=rrnID)
 				a.assessor_id = newAssessorID
 				a.save()
-
-				a2 = {'assessor': new_assessor}
-				for entry in rrnData:
-					entry.update(a2)
-
+				
+			# This will update the current assessorID with new assessor name provided by user input
 			# Want this to only change the name for this certificate so may need to create new assessor with new name and existing number
-			# Currently changes all certificates with the existing assessor name
+			# Currently changes the assessor name for all entries in database with the existing assessor name
 			else:
-				a = Certificate.objects.get(rrn_id=rrnID)
-				a.assessor.name = new_assessor
+				current_assessorID = certObj.assessor_id
+				a = Assessor.objects.get(id=current_assessorID)
+				a.name = new_assessor
 				a.save()
-
-				a2 = {'assessor': new_assessor}
-				for entry in rrnData:
-					entry.update(a2)
 
 		if request.POST.get("number_check"):
 			new_number = request.POST.get('number')
+			current_assessor = rrnData[0]['assessor']
+			rrnData[0]['number'] = new_number
 
-			for entry in rrnData:
-				assessor = entry['assessor']
-
-			if Assessor.objects.filter(Q(scheme_number=new_number) & Q(name=assessor)):
-				numberObj = Certificate.objects.get(Q(assessor__scheme_number=new_number) & Q(assessor__name=assessor))
+			# Checks if the new number is in the database with an existing assessor name and sets the certificate assessorID appropriately
+			if Assessor.objects.filter(Q(scheme_number=new_number) & Q(name=current_assessor)):
+				numberObj = Certificate.objects.get(Q(assessor__scheme_number=new_number) & Q(assessor__name=current_assessor))
 				newNumberID = numberObj.assessor_id
 
 				n = Certificate.objects.get(rrn_id=rrnID)
 				n.assessor_id = newAssessorID
 				n.save()
 
-				n2 = {'number': new_number}
-				for entry in rrnData:
-					entry.update(n2)
-
+			# If new assessor number does not exist in the database then this changes the existing assessor table entry with data provided by user input
 			else:
-				n = Certificate.objects.get(rrn_id=rrnID)
-				n.assessor.scheme_number = new_number
+				current_assessorID = certObj.assessor_id
+				n = Assessor.objects.get(id=current_assessorID)
+				n.scheme_number = new_number
 				n.save()
 
-				n2 = {'number': new_number}
-				for entry in rrnData:
-					entry.update(n2)
-
+		# Use new scheme from user input to retrieve schemeID and update certificate schemeID appropriately - much like type above 
 		if request.POST.get("scheme_check"):
+			new_scheme = request.POST.get('scheme')
+			rrnData[0]['scheme'] = new_scheme
+
 			new_scheme = request.POST.get('scheme')
 			schemeObj = Scheme.objects.get(accred_scheme=new_scheme)
 			newSchemeID = schemeObj.id
@@ -381,10 +359,8 @@ def rrn(request, rrn):
 			sch.scheme_id = newSchemeID
 			sch.save()
 
-			sch2 = {'scheme': new_scheme}
-			for entry in rrnData:
-				entry.update(sch2)
-
+		# Takes user input date and formats before updating certificate expiry
+		# Need to add exception clause for incorrect format
 		if request.POST.get("expiry_check"):
 			new_expiry = request.POST.get('expiry')
 			try:
@@ -393,15 +369,16 @@ def rrn(request, rrn):
 				exp.expiry = dateObj
 				exp.save()
 
-				exp2 = {'expiry': dateObj}
-				for entry in rrnData:
-					entry.update(exp2)
+				rrnData[0]['expiry'] = dateObj
 			except:
 				# Add section to return to edit page with warning that date format is incorrect
 				pass
 
+		# Same function as the type and scheme sections above
 		if request.POST.get("comp_check"):
 			new_comp = request.POST.get('complexity')
+			rrnData[0]['complexity'] = new_comp
+
 			compObj = Complexity.objects.get(rating=new_comp)
 			newCompID = compObj.id
 
@@ -409,84 +386,71 @@ def rrn(request, rrn):
 			c.complexity_id = newCompID
 			c.save()
 
-			c2 = {'complexity': new_comp}
-			for entry in rrnData:
-				entry.update(c2)
-
+		# Updates certificate area with user input
+		# Maybe add check to ensure integer value at later date, not important yet.
 		if request.POST.get("area_check"):
 			new_area = request.POST.get('area')
+			rrnData[0]['area'] = new_area
 
 			areaObj = Certificate.objects.get(rrn_id=rrnID)
 			areaObj.building_area = new_area
 			areaObj.save()
 
-			area2 = {'area': new_area}
-			for entry in rrnData:
-				entry.update(area2)
-
 		if request.POST.get("emp_check"):
 			new_emp = request.POST.get('employer')
+			current_employerAddress = rrnData[0]['employerAddress']
+			rrnData[0]['employer'] = new_emp
 
-			for entry in rrnData:
-				employerAddress = entry['employerAddress']
-
-			if Employer.objects.filter(Q(name=new_emp) & Q(address=employerAddress)):
-				employerObj = Certificate.objects.get(Q(employer__name=new_emp) & Q(employer__address=employerAddress))
+			# Checks if an employer entry exists with new employer details provided by user, retrieves employerID and sets certificate employerID appropriately
+			if Employer.objects.filter(Q(name=new_emp) & Q(address=current_employerAddress)):
+				employerObj = Certificate.objects.get(Q(employer__name=new_emp) & Q(employer__address=current_employerAddress))
 				newEmployerID = employerObj.employer_id
 
 				e = Certificate.objects.get(rrn_id=rrnID)
 				e.employer_id = newEmployerID
 				e.save()
-
-				e2 = {'employer': new_emp}
-				for entry in rrnData:
-					entry.update(e2)
-
+			# If new employer does not exist in the database then this changes the existing employer table entry with data provided by user input
 			else:
-				e = Certificate.objects.get(rrn_id=rrnID)
-				e.employer.name = new_emp
+				current_employerID = certObj.employer_id
+				e = Employer.objects.get(id=current_employerID)
+				e.name = new_emp
 				e.save()
-
-				e2 = {'employer': new_emp}
-				for entry in rrnData:
-					entry.update(e2)
 
 		if request.POST.get("empAdd_check"):
 			new_empAdd = request.POST.get('empAdd')
+			current_employer = rrnData[0]['employer']
+			rrnData[0]['employerAddress'] = new_empAdd
 
-			for entry in rrnData:
-				employer = entry['employer']
-
-			if Employer.objects.filter(Q(name=employer) & Q(address=new_empAdd)):
-				employerObj = Certificate.objects.get(Q(employer__name=employer) & Q(employer__address=new_empAdd))
+			# Checks if an employer entry exists with new employer address details provided by user, retrieves employerID and sets certificate employerID appropriately
+			if Employer.objects.filter(Q(name=current_employer) & Q(address=new_empAdd)):
+				employerObj = Certificate.objects.get(Q(employer__name=current_employer) & Q(employer__address=new_empAdd))
 				newEmployerID = employerObj.employer_id
 
 				emp = Certificate.objects.get(rrn_id=rrnID)
 				emp.employer_id = newEmployerID
 				emp.save()
-
-				emp2 = {'employerAddress': new_empAdd}
-				for entry in rrnData:
-					entry.update(emp2)
-
+			# If new employer address does not exist in the database then this changes the existing employer table entry with data provided by user input
 			else:
-				emp = Certificate.objects.get(rrn_id=rrnID)
-				emp.employer.address = new_empAdd
+				current_employerID = certObj.employer_id
+				emp = Employer.objects.get(id=current_employerID)
+				emp.address = new_empAdd
 				emp.save()
 
-				emp2 = {'employerAddress': new_empAdd}
-				for entry in rrnData:
-					entry.update(emp2)
-
+		# Updates certificate epc_rating with user input
+		# Maybe add check to ensure integer value at later date, not important yet.
 		if request.POST.get("rating_check"):
 			new_rating = request.POST.get('rating')
+			rrnData[0]['rating'] = new_rating
 
 			ratingObj = Certificate.objects.get(rrn_id=rrnID)
 			ratingObj.epc_rating = new_rating
 			ratingObj.save()
 
+		# Gets new environment_typeID from environment table depending on user input and updates certificate environment_id appropriately
 		if request.POST.get("env_check"):
 			new_env = request.POST.get('environment')
+			rrnData[0]['environment'] = new_env
+
 			envObj = Environment.objects.get(environment__type=new_env)
 			newEnvID = envObj.id
 
@@ -494,9 +458,16 @@ def rrn(request, rrn):
 			env.environment_id = newEnvID
 			env.save()
 
-			env2 = {'environment': new_env}
-			for entry in rrnData:
-				entry.update(env2)
+		# Add regex to ensure RRN is entered in correct format
+		if request.POST.get("rrn_check"):
+			check_list.append('rrn_check')
+			new_rrn = request.POST.get('rrn')
+
+			instance = RRN.objects.get(id=rrnID)
+			instance.rrn = new_rrn
+			instance.save()
+			
+			rrnData[0]['rrn'] = new_rrn
 
 		context = {
 			'rrnData': rrnData,
@@ -506,10 +477,10 @@ def rrn(request, rrn):
 
 	elif request.method == 'POST' and 'return' in request.POST:
 		context = {
-			'rrnData': rrnData,
+			'INdata': rrnData,
 		}
 
-		return render(request, 'main/rrn.html', context)
+		return render(request, 'main/database.html', context)
 
 	else:
 		context = {

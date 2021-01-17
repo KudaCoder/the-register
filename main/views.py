@@ -43,6 +43,11 @@ def main(request):
 
 	# Querset to return all rows with an expiry date +/- 6 months from current month then separate into 3 lists of EPC, TM44 & DEC
 	expiryObj = certObj.filter(expiry__range=[prev_half_year, next_half_year]).values_list('expiry__year', 'expiry__month', 'type__type').annotate(Count('type__id')).order_by('expiry__year') # expiryObj returns 3 element tuple
+	prev_half_year = currentDate - relativedelta(months=6)
+	next_half_year = currentDate + relativedelta(months=6)
+
+	expiryObj = certObj.filter(expiry__range=[prev_half_year, next_half_year]).values_list('expiry__year', 'expiry__month', 'type__type').annotate(Count('type__id')).order_by('expiry__year')
+
 	for entry in expiryObj:
 		if 'EPC' in entry:
 			epcExpiryData.append(entry[3])
@@ -61,6 +66,11 @@ def main(request):
 		searchObj = certObj.filter(Q(expiry__month=currentMonth) & Q(expiry__year=currentYear)).exclude(type_id=3).order_by('-expiry')[:1000]
 
 		# Set titles & display data for datatables on database page
+		searchObj = Certificate.objects.filter(Q(expiry__month=currentMonth) & Q(expiry__year=currentYear)).exclude(type_id=3).order_by('-expiry')[:1000]
+
+		# ("""SELECT * from certificate 
+		# 	where YEAR(expiry) = YEAR(CURRENT_DATE()) and MONTH(expiry) = MONTH(CURRENT_DATE()) """)
+
 		titles.extend(['', 'RRN', 'Site Address', 'Certificate Type', 'Assessor Name', 'Expiry Date'])
 
 		for entry in searchObj:
@@ -74,6 +84,11 @@ def main(request):
 		postData.append(temp_dict)
 
 		# Set the correct linktype so the datatable show the correct titles
+		postData = []
+		plus_one_month = datetime.now().date() + relativedelta(months=+1)
+		temp_dict = {'query': '', 'queryType1': 'postcode', 'query2': datetime.now().date(), 'queryType2': 'expiry_before', 'query3': plus_one_month,'queryType3': 'expiry_after'}
+		postData.append(temp_dict)
+
 		linkType = 'rrn'
 
 		context = {

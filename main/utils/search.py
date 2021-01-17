@@ -138,7 +138,7 @@ class search:
             self.titles = self.set_titles(self.linkType)
             searchObj = self.base_qs.filter(Q(assessor__name__icontains=self.query) | Q(assessor__name__icontains=self.query2) | Q(assessor__name__icontains=self.query3))
         else:
-            self.linkType = 'rrn'
+            self.linkType = 'assessor'
             self.titles = self.set_titles(self.linkType)
 
             # 2ND QUERY

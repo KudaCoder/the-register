@@ -29,6 +29,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'the-register-clone.herokuapp.com',
     'localhost',
+    '127.0.0.1',
 ]
 
 
